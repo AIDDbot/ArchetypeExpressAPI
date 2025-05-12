@@ -1,0 +1,17 @@
+{
+	"project-name": "{{ project name }}",
+	"container": {
+		"id": "{{ container.id }}",
+		"slug": "{{ container | slug }}",
+		"folder": "/{{ slug }}",
+		"status": "{{: implemented | test-verified | test-failed }}"
+	},
+	"features": [
+		{
+			"id": "{{ feature.id }}",
+			"slug": "{{ feature.slug }}",
+			"status": "{{: test-verified | test-failed }}",
+			"git": "{{ git id for the feature commit or branch }}"
+		}
+	]
+}

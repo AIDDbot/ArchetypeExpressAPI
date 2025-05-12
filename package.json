@@ -1,0 +1,16 @@
+{
+	"name": "archetype-node-api",
+	"version": "1.0.0",
+	"description": "Node API Archetype",
+	"scripts": {},
+	"keywords": [],
+	"author": {
+		"name": "Alberto Basalo",
+		"email": "albertobasalo@aicode.academy"
+	},
+	"license": "ISC",
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.15.3"
+	}
+}

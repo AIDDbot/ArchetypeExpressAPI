@@ -1,0 +1,162 @@
+{
+	"architectures": [
+		{
+			"name": "modular",
+			"description": "Groups code in modules for each feature and optional shared modules",
+			"scaffolding": [
+				{
+					"name": "features",
+					"description": "A folder for each feature",
+					"folders": [
+						{
+							"name": "feature-1",
+							"description": "A folder for feature 1",
+							"folders": ["api", "domain", "system"]
+						},
+						{
+							"name": "feature-2",
+							"description": "A folder for feature 2"
+						}
+					]
+				},
+				{
+					"name": "shared",
+					"description": "A folder for shared utilities",
+					"folders": [
+						{
+							"name": "cache",
+							"description": "A folder for cache utilities"
+						},
+						{
+							"name": "env",
+							"description": "A folder for environment utilities"
+						},
+						{
+							"name": "log",
+							"description": "A folder for logging utilities"
+						}
+					]
+				}
+			],
+			"guardrails": [
+				"Features modules can depend on shared modules",
+				"Shared modules can't depend on feature modules",
+				"Inside feature modules, dependencies go top to bottom (api -> domain -> system)",
+				"Between feature modules, are restricted to the api layer"
+			]
+		}
+	],
+	"component-types": [
+		{
+			"name": "adapter",
+			"description": "Wraps an external dependency."
+		},
+		{
+			"name": "builder",
+			"description": "Creates and configures instances"
+		},
+		{
+			"name": "command",
+			"description": "Executes a task based on user input."
+		},
+		{
+			"name": "component",
+			"description": "A reusable UI building block."
+		},
+		{
+			"name": "config",
+			"description": "Configuration and bootstrap"
+		},
+		{
+			"name": "controller",
+			"description": "Redirects logic based on user input."
+		},
+		{
+			"name": "decorator",
+			"description": "Adds behavior to classes or functions."
+		},
+		{
+			"name": "facade",
+			"description": "Provides a simplified interface to a complex system."
+		},
+		{
+			"name": "factory",
+			"description": "Creates and configures instances."
+		},
+		{
+			"name": "gateway",
+			"description": "Connects to an external system."
+		},
+		{
+			"name": "interface",
+			"description": "Defines a contract for classes."
+		},
+		{
+			"name": "mapper",
+			"description": "Maps data between different formats."
+		},
+		{
+			"name": "repository",
+			"description": "Implements a data access logic."
+		},
+		{
+			"name": "service",
+			"description": "Implements a business logic."
+		},
+		{
+			"name": "singleton",
+			"description": "Ensures a class has only one instance."
+		},
+		{
+			"name": "store",
+			"description": "Implements an in-memory data storage (could be reactive) logic."
+		},
+		{
+			"name": "type",
+			"description": "Defines types and defaults."
+		},
+		{
+			"name": "util",
+			"description": "A utility module."
+		},
+		{
+			"name": "validator",
+			"description": "Validates data."
+		}
+	],
+	"archetypes": [
+		{
+			"name": "node-cli",
+			"tier": "frontend",
+			"ux": "cli",
+			"description": "A Node.js CLI application",
+			"language": "Typescript",
+			"framework": "Node.js",
+			"architecture": "modular",
+			"paradigm": "functional",
+			"repository": "https://github.com/AIcodeAcademy/ArchetypeNodeCLI"
+		},
+		{
+			"name": "node-api",
+			"tier": "backend",
+			"ux": "rest",
+			"description": "A Node.js API application",
+			"language": "Typescript",
+			"framework": "Node.js",
+			"architecture": "modular",
+			"paradigm": "functional",
+			"repository": "https://github.com/AIcodeAcademy/ArchetypeNodeAPI"
+		},
+		{
+			"name": "angular-spa",
+			"tier": "frontend",
+			"ux": "spa",
+			"description": "An Angular SPA application",
+			"language": "Typescript",
+			"framework": "Angular",
+			"architecture": "modular",
+			"paradigm": "declarative",
+			"repository": "https://github.com/AIcodeAcademy/ArchetypeAngularSPA"
+		}
+	]
+}
