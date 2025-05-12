@@ -10,7 +10,10 @@
   },
   "main": "src/main.ts",
   "scripts": {
-    "start": "node src/main.ts"
+    "start": "node src/main.ts",
+    "dev": "node --watch  src/main.ts",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
   "keywords": [],
   "license": "ISC",
