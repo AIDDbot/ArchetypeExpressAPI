@@ -1,4 +1,4 @@
-# Archetype Node API  
+# Archetype Express API  
 
 Based on the [AIDDbot](https://github.com/AIcodeAcademy/AIDDbot) project.
 

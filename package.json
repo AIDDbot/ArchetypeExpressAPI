@@ -1,7 +1,7 @@
 {
-	"name": "archetype-node-api",
+	"name": "archetype-express-api",
 	"version": "1.0.0",
-	"description": "Node API Archetype",
+	"description": "Express API Archetype",
 	"scripts": {},
 	"keywords": [],
 	"author": {
@@ -10,7 +10,7 @@
 	},
 	"license": "ISC",
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@types/node": "^22.15.3"
+		"prettier": "^3.5.3",
+		"@types/node": "^22.15.17"
 	}
 }
