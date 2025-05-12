@@ -137,15 +137,15 @@
 			"repository": "https://github.com/AIcodeAcademy/ArchetypeNodeCLI"
 		},
 		{
-			"name": "node-api",
+			"name": "express-api",
 			"tier": "backend",
 			"ux": "rest",
-			"description": "A Node.js API application",
+			"description": "A Express API application",
 			"language": "Typescript",
-			"framework": "Node.js",
+			"framework": "Express",
 			"architecture": "modular",
-			"paradigm": "functional",
-			"repository": "https://github.com/AIcodeAcademy/ArchetypeNodeAPI"
+			"paradigm": "declarative",
+			"repository": "https://github.com/AIcodeAcademy/ArchetypeExpressAPI"
 		},
 		{
 			"name": "angular-spa",
