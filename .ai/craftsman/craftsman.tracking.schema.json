@@ -3,14 +3,13 @@
 	"container": {
 		"id": "{{ container.id }}",
 		"slug": "{{ container | slug }}",
-		"folder": "/{{ slug }}",
-		"status": "{{: implemented | test-verified | test-failed }}"
+		"status": "{{: implemented | test-verified | test-failed | refactored | documented }}"
 	},
 	"features": [
 		{
 			"id": "{{ feature.id }}",
 			"slug": "{{ feature.slug }}",
-			"status": "{{: test-verified | test-failed }}",
+			"status": "{{: implemented | test-verified | test-failed | refactored | documented }}",
 			"git": "{{ git id for the feature commit or branch }}"
 		}
 	]

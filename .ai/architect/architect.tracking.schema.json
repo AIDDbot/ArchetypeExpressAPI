@@ -5,7 +5,7 @@
 			"id": "f{{#}}",
 			"name": "{{ name | short sentence | Title Case }}",
 			"slug": "{{ id }}-{{ name | slugify }}",
-			"status": "{{: draft | defined | planned | prompted | implemented | tested | failed | versioned }}"
+			"status": "{{: draft | defined }}"
 		}
 	],
 	"containers": [
@@ -13,7 +13,7 @@
 			"id": "c{{#}}",
 			"archetype": "{{: node-cli | express-api | angular-spa | other }}",
 			"slug": "{{ id }}-{{ archetype | slugify }}",
-			"status": "{{: draft | defined | planned | prompted | implemented | tested | failed | versioned }}"
+			"status": "{{: draft | defined }}"
 		}
 	]
 }

@@ -2,23 +2,36 @@
 
 ## Overview
 
-Syntax for creating templates to be processed by LLMs to generate structured content.
+Syntax for using templates to generate structured content.
 
-Consist of a `YAML` header section and a `Markdown` body.
+Consist of a `YAML` _header_ section and a `Markdown` _body_.
 
 ### YAML Header
 
-A metadata section to guide the LLM in generating the output file.
+A metadata section to guide the process of generating the output file.
+Defines variables and naming conventions.
 
 **IMPORTANT**
 
-Do not include the YAML header in the output document.
+Do NOT include the `YAML` header in the output document.
+
+**EXAMPLE**
+
+Indicates the folder and file to be generated.
+
+```md
+---
+folder: /docs
+file: {{ projectName | lower }}.md
+---
+```
+
 
 ### Markdown Body
 
-The template content used to generate the output file.
+The template used to generate the output file.
 
-Contains all the text and instructions to be executed.
+Contains all the literal content, placeholders and instructions to be followed.
 
 ## Syntax Elements
 
@@ -26,28 +39,26 @@ Contains all the text and instructions to be executed.
 
 Standard comments contain instructions for processing the template.
 
-Read and follow them but do not include them in the output.
+Read and follow them but do NOT include them in the output.
 
-**TIP**
-
-Example of an instruction comment:
+**EXAMPLE**
 
 ```md
 <!-- This is an instruction comment
   It can span multiple lines
-  Follow these instructions but don't include them in output
+  Contains instructions for the LLM
 -->
 ```
 
 ### Expression Placeholders
 
-Placeholders are special tokens inside double curly braces `{{  }}` that indicate content that must be generated or filled in.
+_Placeholders_ are special tokens inside double curly braces `{{  }}` that indicate content that must be generated or filled in.
 
 Can be expressed in natural language or as variable in `camelCase`.
 
-Can include the `|` symbol to add a formatting modifier.
+Can include the pipe symbol `|` to add a formatting modifier.
 
-The LLM will resolve the placeholder expression to a text value to be included in the output.
+Resolve the placeholder expression to a text value to be included in the output.
 
 Resolution priority:
 
@@ -58,9 +69,7 @@ Resolution priority:
    - Take into account the context of the previous answers
    - Offer a choice of predefined answers if possible
 
-**TIP**
-
-Example of expression placeholders:
+**EXAMPLE**
 
 ```md
 {{ description in natural language }}
@@ -70,15 +79,13 @@ Example of expression placeholders:
 
 ### Conditional Sections
 
-Include content only when conditions are met.
+Some sections are only included if a _condition_ is met.
 
 Use natural language to describe the conditions.
 
 Use `if` and `end` to enclose the section.
 
-**TIP**
-
-Example of conditional sections:
+**EXAMPLE**
 
 ```md
 {{ if condition }}
@@ -88,15 +95,13 @@ Content when true
 
 ### Loops
 
-Include content repeatedly for each item in a list.
+Some sections are repeated for each item in a list.
 
-Use natural language to describe the loop.
+Use natural language to describe the _loop_.
 
 Use `for` and `end` to enclose the section.
 
-**TIP**
-
-Example of loops:
+**EXAMPLE**
 
 ```md
 {{ for item in items }}
@@ -106,22 +111,20 @@ Content for each {{ item }}
 
 ### Value Constraints
 
-Some placeholders can be constrained to specific values.
+Some placeholders can be _constrained_ to specific values.
 
 You can pick from the list or offer them to user to choose from.
 
 Those lists are prefixed by `:` and separated by `|` or `,` for single or multiple choices.
 
-**TIP**
-
-Example of value constraints:
+**EXAMPLE**
 
 ```md
 The main theme of the project is {{ : red | green | blue }}.
 We will use {{ : console, file, database | none }} for logging.
 ```
 
-Should produce:
+Can produce something like:
 
 ```md
 The main theme of the project is red.
@@ -130,13 +133,11 @@ We will use console and file for logging.
 
 ### Numbering
 
-Use the hash `#` symbol to number items.
+Use the hash `#` symbol to _number_ items.
 
-When used in a loop, it will be replaced with the current item number.
+When used in a loop, it will be replaced with the current item _number_.
 
-**TIP**
-
-Example of numbering:
+**EXAMPLE**
 
 ```md
 # Feature {{ F# }}
@@ -159,7 +160,7 @@ Task `2`: Do something else
 
 ### Variable aliases
 
-Define reusable values with the `=` symbol, named in `camelCase` :
+Define reusable values with the equal assignment `=` symbol, named variables in `camelCase` :
 
 Variables rules:
 
@@ -168,9 +169,7 @@ Variables rules:
 - Can reference other aliases defined earlier
 - Cannot be redefined
 
-**TIP**
-
-Example of variable aliases:
+**EXAMPLE**
 
 ```md
 {{ userName = John Doe }}
@@ -180,9 +179,26 @@ Project lead: {{ userName }}
 Start date: {{ projectStart }}
 ```
 
+### Mandatory vs optional sections
+
+Some sections are mandatory, others are optional.
+
+Use the `?` symbol as a suffix to make a section optional.
+
+Use the `!` symbol as a suffix to make a section mandatory.
+
+**EXAMPLE**
+
+```md
+{{ optionalSection? }}
+{{ normalSection }}
+{{ mandatorySection! }}
+```
+
+
 ### Summary of syntax symbols
 
-**NOTE**
+**IMPORTANT**
 
 Presented between `code blocks` just for ease of reading, not to be included in the template.
 
