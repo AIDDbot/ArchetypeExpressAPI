@@ -1,3 +1,5 @@
+
+# Post a log entry
 POST http://localhost:3000/logs HTTP/1.1
 content-type: application/json
 
@@ -7,3 +9,11 @@ content-type: application/json
     "context": "sample context",
     "timestamp": "2025-05-15T18:27:50.000Z"
 }
+
+###
+
+# Get all log entries
+GET http://localhost:3000/logs HTTP/1.1
+
+
+

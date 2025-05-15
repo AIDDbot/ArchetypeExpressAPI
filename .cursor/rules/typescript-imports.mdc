@@ -1,0 +1,20 @@
+---
+description: 
+globs: *.ts
+alwaysApply: false
+---
+# TypeScript Import Rules
+
+- Include the file extension in the import statement. 
+
+- Use the `import type` instruction when importing types.
+
+### Correct Examples:
+
+```typescript
+import { somethingRealtive } from './file.ts';
+import { somethingFromRoot } from '/src/file.ts';
+import type { SomeType } from "./some.type.ts";
+```
+
+

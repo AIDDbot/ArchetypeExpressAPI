@@ -5,7 +5,8 @@ import { logsService } from "./logs.service.ts";
 const router = Router();
 
 router.get("/", (req, res) => {
-  res.send("Hello Logs!");
+  // method not allowed
+  res.status(405).json({ message: "Method not allowed" });
 });
 
 router.post("/", async (req, res) => {

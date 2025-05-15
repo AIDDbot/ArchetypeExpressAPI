@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { mapLogEntryToCsv } from "../app/resources/logs/log-entry-csv.mapper.ts";
 import type { LogEntry } from "../app/resources/logs/log-entry.type.ts";
 
-// Deterministic tests
+// 1. Deterministic tests
 
 test("mapLogEntryToCsv", () => {
   // Arrange
