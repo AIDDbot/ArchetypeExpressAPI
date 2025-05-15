@@ -1,7 +1,7 @@
-import { bootstrap } from "./app/app.bootstrap.ts";
+import { bootstrapApp } from "./app/app.bootstrap.ts";
 
 try {
-  bootstrap();
+  bootstrapApp();
 } catch (error) {
   console.error(error);
 }
