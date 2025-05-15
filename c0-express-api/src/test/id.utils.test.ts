@@ -22,18 +22,18 @@ test("idUtils.generate", async () => {
 
 // 3 State change tests
 
-test("idUtils.getSeed", async () => {
+test("idUtils.last", async () => {
   const id = await idUtils.generate();
-  const expectedLast = parseInt(id.split(".")[1]);
+  const expectedLast = Number.parseInt(id.split(".")[1]);
   const actualLast = idUtils.last;
   assert.strictEqual(actualLast, expectedLast);
 });
 
 // 4 Effect tests
 
-test("idUtils.generate", async () => {
+test("idUtils.seedJson", async () => {
   const id = await idUtils.generate();
-  const expectedSeed = parseInt(id.split(".")[0]);
+  const expectedSeed = Number.parseInt(id.split(".")[0]);
   const actualSeed = await file.readJson("seed.json");
   assert.strictEqual(actualSeed, expectedSeed);
 });

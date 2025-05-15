@@ -9,13 +9,13 @@ export const logsRepository = {
     await logsRepository.persist();
   },
   persist: async () => {
-    if (logsRepository.buffer.length < 10) {
+    if (logsRepository.buffer.length < 0) {
       return;
     }
-    const filename = `logs.csv`;
-    logsRepository.buffer.forEach((logEntry) => {
+    const filename = "logs.csv";
+    for (const logEntry of logsRepository.buffer) {
       file.appendLine(filename, mapLogEntryToCsv(logEntry));
-    });
+    }
     logsRepository.buffer = [];
   },
 };

@@ -4,4 +4,6 @@ export type LogEntry = {
   message: string;
   context: string;
   timestamp: number;
+  source: string;
+  ip: string;
 };
