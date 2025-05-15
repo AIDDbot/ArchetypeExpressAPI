@@ -24,6 +24,6 @@
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.17",
-    "prettier": "^3.5.3"
+    "@biomejs/biome": "^1.9.4"
   }
 }

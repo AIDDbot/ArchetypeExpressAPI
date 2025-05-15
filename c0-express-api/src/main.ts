@@ -1,13 +1,7 @@
-import express from "express";
+import { bootstrap } from "./app/app.bootstrap.ts";
 
-const app: express.Application = express();
-const port = "3000";
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-  console.log("Response sent");
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+try {
+  bootstrap();
+} catch (error) {
+  console.error(error);
+}
