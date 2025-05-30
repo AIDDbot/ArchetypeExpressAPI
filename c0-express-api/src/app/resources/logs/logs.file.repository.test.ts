@@ -6,7 +6,7 @@ import { logsFileRepository } from "./logs.file.repository.ts";
 
 
 describe("logsFileRepository.save", () => {
-  const filename = "/temp/logs.csv";
+  const filename = "./tmp/logs.csv";
   beforeEach(async () => {
     await file.delete(filename);
   });

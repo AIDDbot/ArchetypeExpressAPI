@@ -1,5 +1,5 @@
-
 # Post a log entry
+# Should return a 201 created status
 POST http://localhost:3000/logs HTTP/1.1
 content-type: application/json
 
@@ -10,9 +10,22 @@ content-type: application/json
     "timestamp": "2025-05-15T18:27:50.000Z"
 }
 
+
+###
+
+
+# Post an empty log entry
+# Should return a 400 error
+POST http://localhost:3000/logs HTTP/1.1
+content-type: application/json
+
+
+
+
 ###
 
 # Get all log entries
+# Should return a 405 error
 GET http://localhost:3000/logs HTTP/1.1
 
 
