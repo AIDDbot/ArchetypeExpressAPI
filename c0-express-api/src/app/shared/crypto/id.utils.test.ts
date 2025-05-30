@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { test } from "node:test";
-import { idUtils } from "../app/shared/crypto/id.utils.ts";
-import { file } from "../app/shared/file/file.adapter.ts";
+import { file } from "../file/file.adapter.ts";
+import { idUtils } from "./id.utils.ts";
 
 // 1 Deterministic tests
 

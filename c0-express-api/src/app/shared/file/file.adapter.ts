@@ -56,7 +56,9 @@ export const file = {
    * @param path - The path to delete.
    */
   async delete(path: string): Promise<void> {
-    await fs.unlink(path);
+    if (await file.exists(path)) {
+      await fs.unlink(path);
+    }
   },
 
   /**
