@@ -1,7 +1,7 @@
 import { jwtUtils } from "../../shared/crypto/jwt.utils.ts";
-import { LoginDto } from "./login-dto.type.ts";
-import type { RegisterDto } from "./register-dto.type";
-import { UserTokenDTO } from "./user-token.dto.ts";
+import type { LoginDto } from "./login-dto.type.ts";
+import type { RegisterDto } from "./register-dto.type.ts";
+import type { UserTokenDTO } from "./user-token.dto.ts";
 
 export const usersService = {
   register: async (registerDto: RegisterDto): Promise<UserTokenDTO> => {
