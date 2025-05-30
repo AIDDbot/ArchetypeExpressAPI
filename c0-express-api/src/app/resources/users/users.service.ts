@@ -1,5 +1,5 @@
 import type { Id } from "../../shared/crypto/id.interface.ts";
-import { jwtUtils } from "../../shared/crypto/jwt.utils.ts";
+import type { JwtUtils } from "../../shared/crypto/jwt.utils.ts";
 import type { LoginDto } from "./login-dto.type.ts";
 import type { RegisterDto } from "./register-dto.type.ts";
 import type { UserTokenDTO } from "./user-token.dto.ts";
@@ -9,63 +9,66 @@ import type { UsersRepository } from "./users.repository.interface.ts";
 export const usersService = {
   register: async (
     registerDto: RegisterDto,
-    usersRepository: UsersRepository,
-    id: Id,
-    hashString: (str: string) => string
+    deps: {
+      usersRepository: UsersRepository;
+      hashString: (str: string) => string;
+      jwtUtils: JwtUtils;
+      id: Id;
+    }
   ): Promise<UserTokenDTO> => {
-    const existingUser = await usersRepository.findByEmail(registerDto.email);
+    const existingUser = await deps.usersRepository.findByEmail(
+      registerDto.email
+    );
     if (existingUser) {
       throw new Error(`User already exists with email ${registerDto.email}`);
     }
-    const user: User = {
-      id: await id.generate(),
+    const newUser: User = {
+      id: await deps.id.generate(),
       name: registerDto.name,
       email: registerDto.email,
-      password: hashString(registerDto.password),
+      password: deps.hashString(registerDto.password),
     };
-    await usersRepository.insert(user);
-    const token = jwtUtils.sign({ id: user.id });
+    await deps.usersRepository.insert(newUser);
+    const token = deps.jwtUtils.sign({ id: newUser.id });
+    const { password, ...user } = newUser;
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      user,
       token,
     };
   },
   login: async (
     loginDto: LoginDto,
-    usersRepository: UsersRepository,
-    hashString: (str: string) => string
+    deps: {
+      usersRepository: UsersRepository;
+      hashString: (str: string) => string;
+      jwtUtils: JwtUtils;
+    }
   ): Promise<UserTokenDTO> => {
-    const user = await usersRepository.findByEmail(loginDto.email);
-    if (!user) {
+    const validUser = await deps.usersRepository.findByEmail(loginDto.email);
+    if (!validUser) {
       throw new Error(`User not found with email ${loginDto.email}`);
     }
-    if (user.password !== hashString(loginDto.password)) {
+    if (validUser.password !== deps.hashString(loginDto.password)) {
       throw new Error("Invalid password");
     }
-    const token = jwtUtils.sign({ id: user.id });
+    const token = deps.jwtUtils.sign({ id: validUser.id });
+    const { password, ...user } = validUser;
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      user,
       token,
     };
   },
   getById: async (
     userId: string,
-    usersRepository: UsersRepository
-  ): Promise<Pick<User, "id" | "name" | "email">> => {
-    const user = await usersRepository.findById(userId);
-    if (!user) {
+    deps: {
+      usersRepository: UsersRepository;
+    }
+  ): Promise<Omit<User, "password">> => {
+    const validUser = await deps.usersRepository.findById(userId);
+    if (!validUser) {
       throw new Error(`User not found with id ${userId}`);
     }
-    // remove password from user
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    const { password, ...user } = validUser;
+    return user;
   },
 };

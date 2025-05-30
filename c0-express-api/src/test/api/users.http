@@ -12,8 +12,32 @@ content-type: application/json
 
 # get Current user
 GET http://localhost:3000/users/me HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyLjEiLCJpYXQiOjE3NDg2MjEzNzYsImV4cCI6MTc0ODYyNDk3Nn0.3BMajp7AOjULR8mQmKidTvTkmASUauiJOXqQOQvadYA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3LjEiLCJpYXQiOjE3NDg2MjI3NzcsImV4cCI6MTc0ODYyNjM3N30.FU-ugg-DoGNC-cMnLek36jMq1-gFIAi4nhiaFTKSPlo
 
 ### 
 
 
+# Login
+POST http://localhost:3000/users/login HTTP/1.1
+content-type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "test"
+}
+
+###
+
+# Invalid login
+POST http://localhost:3000/users/login HTTP/1.1
+content-type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "test1"
+}
+
+###
+
+# Invalid register
+POST http://localhost:3000/users/register HTTP/1.1

@@ -1,4 +1,5 @@
 import type { Request } from "express";
+import { jwtUtils } from "../crypto/jwt.utils.ts";
 
 export function getIpFromRequest(req: Request): string {
   const forwardedFor = req.headers["x-forwarded-for"] as string;
@@ -25,4 +26,16 @@ export function getTokenFromRequest(req: Request): string | undefined {
     return undefined;
   }
   return authorization.split(" ")[1];
+}
+
+export function getUserIdFromRequest(req: Request): string | undefined {
+  const token = getTokenFromRequest(req);
+  if (!token) {
+    return undefined;
+  }
+  const decodedToken = jwtUtils.verify(token);
+  if (!decodedToken) {
+    return undefined;
+  }
+  return decodedToken.id;
 }

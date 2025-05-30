@@ -11,7 +11,7 @@ const EXPIRES_IN_SECONDS = 3600; // 1 hour
  * @param {string} secret - The secret key.
  * @returns {Buffer} The signature.
  */
-function createSignature(data: string, secret: string) {
+function createSignature(data: string, secret: string): Buffer {
   if (ALGORITHM !== "HS256") {
     throw new Error(
       "Unsupported algorithm. Only HS256 is implemented in this example."
@@ -96,7 +96,6 @@ function verifyJwt(token: string, secret: string): object | undefined {
     if (jwtPayload.exp && jwtPayload.exp < currentTimestamp) {
       throw new Error("Token has expired.");
     }
-    console.log("jwtPayload", jwtPayload);
     return jwtPayload;
   } catch (error) {
     console.error("Error verifying token:", error);
@@ -104,7 +103,12 @@ function verifyJwt(token: string, secret: string): object | undefined {
   }
 }
 
-export const jwtUtils = {
+export interface JwtUtils {
+  sign: (payload: any) => string;
+  verify: (token: string) => any;
+}
+
+export const jwtUtils: JwtUtils = {
   sign: (payload: any): string =>
     createJwt(payload, JWT_SECRET, EXPIRES_IN_SECONDS),
   verify: (token: string): any => verifyJwt(token, JWT_SECRET),
