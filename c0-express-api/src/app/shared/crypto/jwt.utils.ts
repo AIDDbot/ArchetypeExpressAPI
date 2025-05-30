@@ -3,7 +3,7 @@ import { encodeUtils } from "./encode.utils.ts";
 // --- Configuration ---
 const JWT_SECRET = "your-super-secret-key-that-is-at-least-32-characters-long"; // Replace with a strong, unique secret
 const ALGORITHM = "HS256"; // HMAC using SHA-256
-const EXPIRES_IN_SECONDS = 3600;
+const EXPIRES_IN_SECONDS = 3600; // 1 hour
 
 /**
  * Creates a HMAC SHA256 signature.
@@ -89,13 +89,15 @@ function verifyJwt(token: string, secret: string): object | undefined {
     }
 
     // 3. Decode Payload and Check Expiration
-    const payload = JSON.parse(encodeUtils.base64UrlDecode(encodedPayload));
+    const jwtPayloadJson = encodeUtils.base64UrlDecode(encodedPayload);
+    const jwtPayload = JSON.parse(jwtPayloadJson);
 
-    if (payload.exp && Math.floor(Date.now() / 1000) >= payload.exp) {
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (jwtPayload.exp && jwtPayload.exp < currentTimestamp) {
       throw new Error("Token has expired.");
     }
-
-    return payload;
+    console.log("jwtPayload", jwtPayload);
+    return jwtPayload;
   } catch (error) {
     console.error("Error verifying token:", error);
     return undefined;

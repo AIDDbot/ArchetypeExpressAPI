@@ -18,3 +18,11 @@ export function getSourceFromRequest(req: Request): string {
   }
   return source;
 }
+
+export function getTokenFromRequest(req: Request): string | undefined {
+  const authorization = req.headers["authorization"] as string;
+  if (!authorization) {
+    return undefined;
+  }
+  return authorization.split(" ")[1];
+}

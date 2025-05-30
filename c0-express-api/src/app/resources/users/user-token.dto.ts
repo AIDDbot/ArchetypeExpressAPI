@@ -1,6 +1,6 @@
 import type { User } from "./user.type";
 
 export type UserTokenDTO = {
-  user: User;
+  user: Pick<User, "id" | "name" | "email">;
   token: string;
 };

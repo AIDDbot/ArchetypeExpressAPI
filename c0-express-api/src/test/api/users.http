@@ -10,4 +10,10 @@ content-type: application/json
 
 ###
 
+# get Current user
+GET http://localhost:3000/users/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyLjEiLCJpYXQiOjE3NDg2MjEzNzYsImV4cCI6MTc0ODYyNDk3Nn0.3BMajp7AOjULR8mQmKidTvTkmASUauiJOXqQOQvadYA
+
+### 
+
 
