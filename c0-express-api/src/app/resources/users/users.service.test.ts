@@ -1,24 +1,27 @@
 // unit test for sut: usersService
 import assert from "assert";
-import { describe, it } from "node:test";
+import { beforeEach, describe, it } from "node:test";
+import type { HashUtils } from "../../shared/crypto/hash-utils.interface.ts";
+import type { IdGenerate } from "../../shared/crypto/id.interface.ts";
+import type { JwtUtils } from "../../shared/crypto/jwt-utils.interface.ts";
 import type { LoginDto } from "./login-dto.type.ts";
 import type { RegisterDto } from "./register-dto.type.ts";
 import type { UsersRepository } from "./users.repository.interface.ts";
 import { usersService } from "./users.service.ts";
 
 describe("usersService", () => {
-  const hashStringMock = () => "test";
-  const hashStringInvalidMock = () => "invalid";
-  const idUtilsMock = {
+  const hashUtilsMock: HashUtils = {
+    hashString: () => "test",
+  };
+  const hashUtilsInvalidMock: HashUtils = {
+    hashString: () => "invalid",
+  };
+  const idGenerateMock: IdGenerate = {
     generate: () => Promise.resolve("test"),
   };
-  const jwtUtilsMock = {
+  const jwtUtilsMock: JwtUtils = {
     sign: () => "test",
     verify: () => ({ id: "test" }),
-  };
-  const invalidJwtUtilsMock = {
-    sign: () => "test",
-    verify: () => undefined,
   };
   let stubUsersRepository: UsersRepository;
   it("should be defined", () => {
@@ -30,51 +33,84 @@ describe("usersService", () => {
     password: "test",
     name: "test",
   };
-  describe("When a valid non existing user is registered", () => {
-    it("should register a user", async () => {
-      const registerDto: RegisterDto = {
-        email: "test@test.com",
-        password: "test",
-        name: "test",
-      };
+  describe("Given a non existing user", () => {
+    beforeEach(() => {
       stubUsersRepository = {
         findByEmail: () => Promise.resolve(undefined),
         insert: () => Promise.resolve(userFake),
         findById: () => Promise.resolve(undefined),
         findAll: () => Promise.resolve([]),
       };
-
+    });
+    it("when register, should return a user token", async () => {
+      const registerDto: RegisterDto = {
+        email: "test@test.com",
+        password: "test",
+        name: "test",
+      };
       const userTokenDTO = await usersService.register(registerDto, {
         usersRepository: stubUsersRepository,
-        hashString: hashStringMock,
-        id: idUtilsMock,
+        hashUtils: hashUtilsMock,
+        idGenerate: idGenerateMock,
         jwtUtils: jwtUtilsMock,
       });
       assert.ok(userTokenDTO);
     });
-  });
-  describe("When a valid existing user is registered", () => {
-    it("should login a user", async () => {
+    it("when login, should throw an error", async () => {
       const loginDto: LoginDto = {
         email: "test@test.com",
         password: "test",
       };
+      assert.rejects(
+        async () =>
+          await usersService.login(loginDto, {
+            usersRepository: stubUsersRepository,
+            hashUtils: hashUtilsMock,
+            jwtUtils: jwtUtilsMock,
+          })
+      );
+    });
+  });
+  describe("Given an existing user", () => {
+    beforeEach(() => {
       stubUsersRepository = {
-        findByEmail: (email: string) => Promise.resolve(userFake),
+        findByEmail: () => Promise.resolve(userFake),
         insert: () => Promise.resolve(userFake),
-        findById: () => Promise.resolve(undefined),
+        findById: () => Promise.resolve(userFake),
         findAll: () => Promise.resolve([]),
+      };
+    });
+    it("when login, should return a user token", async () => {
+      const loginDto: LoginDto = {
+        email: "test@test.com",
+        password: "test",
       };
       const userTokenDTO = await usersService.login(loginDto, {
         usersRepository: stubUsersRepository,
-        hashString: hashStringMock,
+        hashUtils: hashUtilsMock,
         jwtUtils: jwtUtilsMock,
       });
       assert.ok(userTokenDTO);
     });
+    it("when register, should throw an error ", async () => {
+      const registerDto: RegisterDto = {
+        email: "test@test.com",
+        password: "test",
+        name: "test",
+      };
+      assert.rejects(
+        async () =>
+          await usersService.register(registerDto, {
+            usersRepository: stubUsersRepository,
+            hashUtils: hashUtilsMock,
+            jwtUtils: jwtUtilsMock,
+            idGenerate: idGenerateMock,
+          })
+      );
+    });
   });
-  describe("When an invalid existing user is login", () => {
-    it("throw an error", async () => {
+  describe("Given a invalid login", () => {
+    it("when login, should throw an error", async () => {
       const loginDto: LoginDto = {
         email: "test@test.com",
         password: "invalid",
@@ -89,7 +125,7 @@ describe("usersService", () => {
         async () =>
           await usersService.login(loginDto, {
             usersRepository: stubUsersRepository,
-            hashString: hashStringInvalidMock,
+            hashUtils: hashUtilsInvalidMock,
             jwtUtils: jwtUtilsMock,
           })
       );

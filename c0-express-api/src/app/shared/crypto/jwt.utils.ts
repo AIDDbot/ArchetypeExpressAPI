@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { encodeUtils } from "./encode.utils.ts";
+import { JwtUtils } from "./jwt-utils.interface.ts";
 // --- Configuration ---
 const JWT_SECRET = "your-super-secret-key-that-is-at-least-32-characters-long"; // Replace with a strong, unique secret
 const ALGORITHM = "HS256"; // HMAC using SHA-256
@@ -101,11 +102,6 @@ function verifyJwt(token: string, secret: string): object | undefined {
     console.error("Error verifying token:", error);
     return undefined;
   }
-}
-
-export interface JwtUtils {
-  sign: (payload: any) => string;
-  verify: (token: string) => any;
 }
 
 export const jwtUtils: JwtUtils = {

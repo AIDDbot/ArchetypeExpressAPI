@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { Router } from "express";
-import { hashString } from "../../shared/crypto/hash.utils.ts";
+import { hashUtils } from "../../shared/crypto/hash.utils.ts";
 import { idUtils } from "../../shared/crypto/id.utils.ts";
 import { jwtUtils } from "../../shared/crypto/jwt.utils.ts";
 import type { ErrorResDTO } from "../../shared/request/error.res.dto.ts";
@@ -54,8 +54,8 @@ async function registerHandler(
   try {
     const userTokenDTO = await usersService.register(registerDto, {
       usersRepository: usersInMemoryRepository,
-      hashString,
-      id: idUtils,
+      hashUtils,
+      idGenerate: idUtils,
       jwtUtils,
     });
     sendSuccess(res, 201, userTokenDTO);
@@ -77,7 +77,7 @@ async function loginHandler(
   try {
     const userTokenDTO = await usersService.login(loginDto, {
       usersRepository: usersInMemoryRepository,
-      hashString,
+      hashUtils,
       jwtUtils,
     });
     sendSuccess(res, 201, userTokenDTO);

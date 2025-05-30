@@ -1,10 +1,10 @@
 import { file } from "../file/file.adapter.ts";
-import type { Id } from "./id.interface.ts";
+import type { IdGenerate } from "./id.interface.ts";
 
 let last = 0;
 let seed = 0;
 
-export const idUtils: Id & any = {
+export const idUtils: IdGenerate & any = {
   extractSeed: (id: string) => {
     return parseInt(id.split(".")[0]);
   },

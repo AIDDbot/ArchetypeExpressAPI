@@ -1,5 +1,6 @@
-import type { Id } from "../../shared/crypto/id.interface.ts";
-import type { JwtUtils } from "../../shared/crypto/jwt.utils.ts";
+import type { HashUtils } from "../../shared/crypto/hash-utils.interface.ts";
+import type { IdGenerate } from "../../shared/crypto/id.interface.ts";
+import type { JwtUtils } from "../../shared/crypto/jwt-utils.interface.ts";
 import type { LoginDto } from "./login-dto.type.ts";
 import type { RegisterDto } from "./register-dto.type.ts";
 import type { UserTokenDTO } from "./user-token.dto.ts";
@@ -11,9 +12,9 @@ export const usersService = {
     registerDto: RegisterDto,
     deps: {
       usersRepository: UsersRepository;
-      hashString: (str: string) => string;
+      hashUtils: HashUtils;
       jwtUtils: JwtUtils;
-      id: Id;
+      idGenerate: IdGenerate;
     }
   ): Promise<UserTokenDTO> => {
     const existingUser = await deps.usersRepository.findByEmail(
@@ -23,10 +24,10 @@ export const usersService = {
       throw new Error(`User already exists with email ${registerDto.email}`);
     }
     const newUser: User = {
-      id: await deps.id.generate(),
+      id: await deps.idGenerate.generate(),
       name: registerDto.name,
       email: registerDto.email,
-      password: deps.hashString(registerDto.password),
+      password: deps.hashUtils.hashString(registerDto.password),
     };
     await deps.usersRepository.insert(newUser);
     const token = deps.jwtUtils.sign({ id: newUser.id });
@@ -40,7 +41,7 @@ export const usersService = {
     loginDto: LoginDto,
     deps: {
       usersRepository: UsersRepository;
-      hashString: (str: string) => string;
+      hashUtils: HashUtils;
       jwtUtils: JwtUtils;
     }
   ): Promise<UserTokenDTO> => {
@@ -48,7 +49,7 @@ export const usersService = {
     if (!validUser) {
       throw new Error(`User not found with email ${loginDto.email}`);
     }
-    if (validUser.password !== deps.hashString(loginDto.password)) {
+    if (validUser.password !== deps.hashUtils.hashString(loginDto.password)) {
       throw new Error("Invalid password");
     }
     const token = deps.jwtUtils.sign({ id: validUser.id });
