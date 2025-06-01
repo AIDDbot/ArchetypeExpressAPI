@@ -19,7 +19,7 @@ logsController.get("/", logsGetHandler);
 logsController.post("/", postHandler);
 
 async function logsGetHandler(req: Request, res: Response<ErrorResDTO>) {
-  res.status(405).json({ message: "Method not allowed" });
+  sendError(res, 405, "Method not allowed");
 }
 async function postHandler(
   req: Request,
