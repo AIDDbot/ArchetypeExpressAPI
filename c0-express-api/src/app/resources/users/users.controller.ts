@@ -37,7 +37,6 @@ async function getMeHandler(
     const user = await getById(userId);
     sendSuccess(res, 200, user);
   } catch (error) {
-    console.error(error);
     sendError(res, 403, "Forbidden");
   }
 }
@@ -55,7 +54,6 @@ async function registerHandler(
     const userTokenDTO = await register(registerDto);
     sendSuccess(res, 201, userTokenDTO);
   } catch (error) {
-    console.error(error);
     sendError(res, 400, "Invalid request");
   }
 }
@@ -73,7 +71,6 @@ async function loginHandler(
     const userTokenDTO = await login(loginDto);
     sendSuccess(res, 201, userTokenDTO);
   } catch (error) {
-    console.error(error);
     sendError(res, 401, "Invalid credentials");
   }
 }
