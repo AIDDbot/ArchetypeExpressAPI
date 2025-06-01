@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { HashUtils } from "./hash-utils.interface";
+import type { HashUtils } from "./hash.utils.interface.ts";
 
 export const hashUtils: HashUtils = {
   hashString: (str: string) => {

@@ -1,6 +1,6 @@
-import type { HashUtils } from "../../shared/crypto/hash-utils.interface.ts";
-import type { IdGenerate } from "../../shared/crypto/id.interface.ts";
-import type { JwtUtils } from "../../shared/crypto/jwt-utils.interface.ts";
+import type { HashUtils } from "../../shared/crypto/hash.utils.interface.ts";
+import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
+import type { JwtUtils } from "../../shared/crypto/jwt.utils.interface.ts";
 import type { LoginDto } from "./login-dto.type.ts";
 import type { RegisterDto } from "./register-dto.type.ts";
 import type { UserTokenDTO } from "./user-token.dto.ts";
@@ -14,7 +14,7 @@ export const usersService = {
       usersRepository: UsersRepository;
       hashUtils: HashUtils;
       jwtUtils: JwtUtils;
-      idGenerate: IdGenerate;
+      idUtils: IdUtils;
     }
   ): Promise<UserTokenDTO> => {
     const existingUser = await deps.usersRepository.findByEmail(
@@ -24,7 +24,7 @@ export const usersService = {
       throw new Error(`User already exists with email ${registerDto.email}`);
     }
     const newUser: User = {
-      id: await deps.idGenerate.generate(),
+      id: await deps.idUtils.generate(),
       name: registerDto.name,
       email: registerDto.email,
       password: deps.hashUtils.hashString(registerDto.password),

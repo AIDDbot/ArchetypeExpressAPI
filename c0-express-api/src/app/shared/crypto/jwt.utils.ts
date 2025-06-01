@@ -1,27 +1,15 @@
 import crypto from "node:crypto";
 import { encodeUtils } from "./encode.utils.ts";
-import { JwtUtils } from "./jwt-utils.interface.ts";
+import type { JwtUtils } from "./jwt.utils.interface.ts";
 // --- Configuration ---
 const JWT_SECRET = "your-super-secret-key-that-is-at-least-32-characters-long"; // Replace with a strong, unique secret
 const ALGORITHM = "HS256"; // HMAC using SHA-256
-const EXPIRES_IN_SECONDS = 3600; // 1 hour
+const EXPIRES_1HOUR = 3600; // 1 hour
 
-/**
- * Creates a HMAC SHA256 signature.
- * @param {string} data - The data to sign.
- * @param {string} secret - The secret key.
- * @returns {Buffer} The signature.
- */
-function createSignature(data: string, secret: string): Buffer {
-  if (ALGORITHM !== "HS256") {
-    throw new Error(
-      "Unsupported algorithm. Only HS256 is implemented in this example."
-    );
-  }
-  const hmac = crypto.createHmac("sha256", secret);
-  hmac.update(data);
-  return hmac.digest();
-}
+export const jwtUtils: JwtUtils = {
+  sign: (payload: any): string => createJwt(payload, JWT_SECRET, EXPIRES_1HOUR),
+  verify: (token: string): any => verifyJwt(token, JWT_SECRET),
+};
 
 /**
  * Creates a JWT.
@@ -104,8 +92,19 @@ function verifyJwt(token: string, secret: string): object | undefined {
   }
 }
 
-export const jwtUtils: JwtUtils = {
-  sign: (payload: any): string =>
-    createJwt(payload, JWT_SECRET, EXPIRES_IN_SECONDS),
-  verify: (token: string): any => verifyJwt(token, JWT_SECRET),
-};
+/**
+ * Creates a HMAC SHA256 signature.
+ * @param {string} data - The data to sign.
+ * @param {string} secret - The secret key.
+ * @returns {Buffer} The signature.
+ */
+function createSignature(data: string, secret: string): Buffer {
+  if (ALGORITHM !== "HS256") {
+    throw new Error(
+      "Unsupported algorithm. Only HS256 is implemented in this example."
+    );
+  }
+  const hmac = crypto.createHmac("sha256", secret);
+  hmac.update(data);
+  return hmac.digest();
+}

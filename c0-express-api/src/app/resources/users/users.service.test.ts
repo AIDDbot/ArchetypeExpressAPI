@@ -1,9 +1,10 @@
 // unit test for sut: usersService
 import assert from "assert";
 import { beforeEach, describe, it } from "node:test";
-import type { HashUtils } from "../../shared/crypto/hash-utils.interface.ts";
-import type { IdGenerate } from "../../shared/crypto/id.interface.ts";
-import type { JwtUtils } from "../../shared/crypto/jwt-utils.interface.ts";
+
+import type { HashUtils } from "../../shared/crypto/hash.utils.interface.ts";
+import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
+import type { JwtUtils } from "../../shared/crypto/jwt.utils.interface.ts";
 import type { LoginDto } from "./login-dto.type.ts";
 import type { RegisterDto } from "./register-dto.type.ts";
 import type { UsersRepository } from "./users.repository.interface.ts";
@@ -16,7 +17,7 @@ describe("usersService", () => {
   const hashUtilsInvalidMock: HashUtils = {
     hashString: () => "invalid",
   };
-  const idGenerateMock: IdGenerate = {
+  const idUtilsMock: IdUtils = {
     generate: () => Promise.resolve("test"),
   };
   const jwtUtilsMock: JwtUtils = {
@@ -51,7 +52,7 @@ describe("usersService", () => {
       const userTokenDTO = await usersService.register(registerDto, {
         usersRepository: stubUsersRepository,
         hashUtils: hashUtilsMock,
-        idGenerate: idGenerateMock,
+        idUtils: idUtilsMock,
         jwtUtils: jwtUtilsMock,
       });
       assert.ok(userTokenDTO);
@@ -104,7 +105,7 @@ describe("usersService", () => {
             usersRepository: stubUsersRepository,
             hashUtils: hashUtilsMock,
             jwtUtils: jwtUtilsMock,
-            idGenerate: idGenerateMock,
+            idUtils: idUtilsMock,
           })
       );
     });

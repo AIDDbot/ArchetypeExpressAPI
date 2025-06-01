@@ -1,34 +1,25 @@
 import { file } from "../file/file.adapter.ts";
-import type { IdGenerate } from "./id.interface.ts";
+import type { IdUtils } from "./id.utils.interface.ts";
 
-let last = 0;
+let counter = 0;
 let seed = 0;
 
-export const idUtils: IdGenerate & any = {
-  extractSeed: (id: string) => {
-    return parseInt(id.split(".")[0]);
-  },
-  extractLast: (id: string) => {
-    return parseInt(id.split(".")[1]);
-  },
-  getSeed: async () => {
-    if (seed > 0) return seed;
-    if (await file.exists("seed.json")) {
-      seed = await file.readJson("seed.json");
-      seed++;
-    }
-    await file.writeJson("seed.json", seed);
-    return seed;
-  },
+export const idUtils: IdUtils = {
   generate: async () => {
-    const currentSeed = await idUtils.getSeed();
-    last++;
-    return `${currentSeed}.${last}`;
-  },
-  get last() {
-    return last;
-  },
-  get seed() {
-    return seed;
+    const currentSeed = await getSeed();
+    counter++;
+    return `${currentSeed}.${counter}`;
   },
 };
+
+const FILE_NAME = "seed.json";
+
+async function getSeed() {
+  if (seed > 0) return seed;
+  if (await file.exists(FILE_NAME)) {
+    seed = await file.readJson(FILE_NAME);
+  }
+  seed++;
+  await file.writeJson(FILE_NAME, seed);
+  return seed;
+}

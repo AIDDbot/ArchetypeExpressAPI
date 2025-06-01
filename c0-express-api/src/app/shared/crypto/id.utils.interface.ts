@@ -1,3 +1,3 @@
-export interface IdGenerate {
+export interface IdUtils {
   generate: () => Promise<string>;
 }

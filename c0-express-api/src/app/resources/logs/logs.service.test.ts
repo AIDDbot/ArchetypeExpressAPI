@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import type { Id } from "../../shared/crypto/id.interface.ts";
-import type { LogEntryDTO } from "./log-entry-dto.type.ts";
+import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
+import type { LogEntryDTO } from "./log-entry.dto.ts";
 import type { LogEntry } from "./log-entry.type.ts";
 import type { LogsRepository } from "./logs.repository.interface.ts";
 import { logsService } from "./logs.service.ts";
@@ -21,14 +21,17 @@ describe("logsService.create", () => {
       save: async (logEntry: LogEntry) => {
         console.log(logEntry);
       },
-      };
-      const id: Id = {
-        generate: async () => {
-          return "1";
-        },
-      };
+    };
+    const idUtils: IdUtils = {
+      generate: async () => {
+        return "1";
+      },
+    };
     // Act
-    const logEntry = await logsService.create(logEntryDto, logRepository, id);
+    const logEntry = await logsService.create(logEntryDto, {
+      logRepository,
+      idUtils,
+    });
     // Assert
     assert.strictEqual(logEntry.message, "sample message");
   });
