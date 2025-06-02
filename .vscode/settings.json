@@ -49,5 +49,23 @@
 		"*.type.ts": "raml",
 		"*.utils.ts": "tilt",
 		"*.validator.ts": "velite"
-	}
+	},
+  "workbench.colorCustomizations": {
+    "activityBar.activeBorder": "#007700",
+    "commandCenter.activeBorder": "#007700",
+    "commandCenter.inactiveBorder": "#007700",
+    "editorCursor.foreground": "#007700",
+    "editorError.foreground": "#00aaff",
+    "editorWarning.foreground": "#00ffff",
+    "focusBorder": "#007700",
+    "inlineChat.border": "#007700",
+    "panel.border": "#007700",
+    "sideBar.border": "#007700",
+    "statusBar.border": "#007700",
+    "tab.activeBorder": "#007700",
+    "tab.activeBorderTop": "#007700",
+    "terminalCursor.foreground": "#007700",
+    "tree.indentGuidesStroke": "#007700",
+    "widget.border": "#007700"
+  },
 }
