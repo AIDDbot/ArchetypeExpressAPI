@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: Investment Portfolio API
+  version: 1.0.0
+  description: RESTful API to manage user investment portfolios with asset transactions.
+
+paths:
+  /portfolios:
+    post:
+      summary: Create a new portfolio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortfolioInput'
+      responses:
+        '201':
+          description: Portfolio created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+    get:
+      summary: Get all portfolios
+      responses:
+        '200':
+          description: List of portfolios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portfolio'
+
+  /portfolios/{id}:
+    get:
+      summary: Get a specific portfolio
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Portfolio found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+        '404':
+          description: Portfolio not found
+
+  /portfolios/{id}/transactions:
+    post:
+      summary: Execute a transaction (buy/sell)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionInput'
+      responses:
+        '201':
+          description: Transaction applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          description: Invalid transaction (e.g., insufficient funds)
+        '404':
+          description: Portfolio not found
+
+    get:
+      summary: Get all transactions for a portfolio
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+components:
+  schemas:
+    PortfolioInput:
+      type: object
+      required: [user_id, name, initial_cash]
+      properties:
+        user_id:
+          type: string
+        name:
+          type: string
+        initial_cash:
+          type: number
+          format: float
+
+    Portfolio:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        name:
+          type: string
+        initial_cash:
+          type: number
+        cash:
+          type: number
+        lastUpdated:
+          type: string
+          format: date-time
+        assets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Asset'
+
+    Asset:
+      type: object
+      properties:
+        asset_type:
+          type: string
+        symbol:
+          type: string
+        units:
+          type: number
+        average_price:
+          type: number
+        lastUpdated:
+          type: string
+          format: date-time
+
+    TransactionInput:
+      type: object
+      required: [type, asset_type, symbol, units, price_per_unit]
+      properties:
+        type:
+          type: string
+          enum: [buy, sell]
+        asset_type:
+          type: string
+        symbol:
+          type: string
+        units:
+          type: number
+        price_per_unit:
+          type: number
+
+    Transaction:
+      allOf:
+        - $ref: '#/components/schemas/TransactionInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            portfolio_id:
+              type: string
+            timestamp:
+              type: string
+              format: date-time

@@ -1,0 +1,114 @@
+{
+  "info": {
+    "_postman_id": "f92d2858-1fd3-4e2a-91bb-a7db2c8f1e04",
+    "name": "Investment Portfolio API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Portfolio",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"user-123\",\n  \"name\": \"Growth Portfolio\",\n  \"initial_cash\": 10000\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/portfolios",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["portfolios"]
+        }
+      }
+    },
+    {
+      "name": "Get All Portfolios",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/portfolios",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["portfolios"]
+        }
+      }
+    },
+    {
+      "name": "Get Portfolio by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/portfolios/{{portfolio_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["portfolios", "{{portfolio_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Buy Asset",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"buy\",\n  \"asset_type\": \"stock\",\n  \"symbol\": \"AAPL\",\n  \"units\": 10,\n  \"price_per_unit\": 150\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/portfolios/{{portfolio_id}}/transactions",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["portfolios", "{{portfolio_id}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "Sell Asset",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"sell\",\n  \"asset_type\": \"stock\",\n  \"symbol\": \"AAPL\",\n  \"units\": 5,\n  \"price_per_unit\": 160\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/portfolios/{{portfolio_id}}/transactions",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["portfolios", "{{portfolio_id}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "List Transactions",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/portfolios/{{portfolio_id}}/transactions",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["portfolios", "{{portfolio_id}}", "transactions"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "portfolio_id",
+      "value": "replace-with-id"
+    }
+  ]
+}

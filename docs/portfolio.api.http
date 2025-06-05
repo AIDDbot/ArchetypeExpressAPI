@@ -1,0 +1,42 @@
+### Create a new portfolio
+POST http://localhost:3000/portfolios
+Content-Type: application/json
+
+{
+  "user_id": "user-123",
+  "name": "Growth Portfolio",
+  "initial_cash": 10000
+}
+
+### Get all portfolios
+GET http://localhost:3000/portfolios
+
+### Get portfolio by ID
+GET http://localhost:3000/portfolios/{{portfolio_id}}
+
+### Buy asset
+POST http://localhost:3000/portfolios/{{portfolio_id}}/transactions
+Content-Type: application/json
+
+{
+  "type": "buy",
+  "asset_type": "stock",
+  "symbol": "AAPL",
+  "units": 10,
+  "price_per_unit": 150
+}
+
+### Sell asset
+POST http://localhost:3000/portfolios/{{portfolio_id}}/transactions
+Content-Type: application/json
+
+{
+  "type": "sell",
+  "asset_type": "stock",
+  "symbol": "AAPL",
+  "units": 5,
+  "price_per_unit": 160
+}
+
+### List transactions for a portfolio
+GET http://localhost:3000/portfolios/{{portfolio_id}}/transactions
