@@ -20,53 +20,60 @@ const updateAsset = (
       a.asset_type === transaction.asset_type && a.symbol === transaction.symbol
   );
 
+  // Handle new asset creation for buy transactions
   if (assetIndex === -1) {
-    if (transaction.type === "buy") {
-      return {
-        ...portfolio,
-        assets: [
-          ...portfolio.assets,
-          {
-            asset_type: transaction.asset_type,
-            symbol: transaction.symbol,
-            units: transaction.units,
-            average_price: transaction.price_per_unit,
-            lastUpdated: new Date(),
-          },
-        ],
-      };
+    if (transaction.type !== "buy") {
+      // throw error, selling is not allowed for not existing assets
+      throw new Error("Selling is not allowed for not existing assets");
     }
-    return portfolio;
+
+    return {
+      ...portfolio,
+      assets: [
+        ...portfolio.assets,
+        {
+          asset_type: transaction.asset_type,
+          symbol: transaction.symbol,
+          units: transaction.units,
+          average_price: transaction.price_per_unit,
+          lastUpdated: new Date(),
+        },
+      ],
+    };
   }
 
   const asset = portfolio.assets[assetIndex];
+
+  // Handle buy transaction for existing asset
   if (transaction.type === "buy") {
     const totalUnits = asset.units + transaction.units;
     const totalValue =
       asset.units * asset.average_price +
       transaction.units * transaction.price_per_unit;
-    const updatedAsset = {
-      ...asset,
-      average_price: totalValue / totalUnits,
-      units: totalUnits,
-      lastUpdated: new Date(),
-    };
+
     return {
       ...portfolio,
       assets: [
         ...portfolio.assets.slice(0, assetIndex),
-        updatedAsset,
+        {
+          ...asset,
+          average_price: totalValue / totalUnits,
+          units: totalUnits,
+          lastUpdated: new Date(),
+        },
         ...portfolio.assets.slice(assetIndex + 1),
       ],
     };
   }
 
+  // Handle sell transaction
   const updatedAsset = {
     ...asset,
     units: asset.units - transaction.units,
     lastUpdated: new Date(),
   };
 
+  // Remove asset if units become zero
   if (updatedAsset.units === 0) {
     return {
       ...portfolio,
@@ -77,6 +84,7 @@ const updateAsset = (
     };
   }
 
+  // Update existing asset with new units
   return {
     ...portfolio,
     assets: [
@@ -126,10 +134,12 @@ export const portfoliosService = {
 
     const totalCost = transactionDto.units * transactionDto.price_per_unit;
 
+    // Handle buy transaction
     if (transactionDto.type === "buy") {
       if (portfolio.cash < totalCost) {
         throw new Error("Insufficient funds for purchase");
       }
+
       const updatedPortfolio = updateAsset(
         {
           ...portfolio,
@@ -138,24 +148,34 @@ export const portfoliosService = {
         transactionDto
       );
       await deps.portfolioRepository.update(portfolioId, updatedPortfolio);
-    } else {
-      const asset = portfolio.assets.find(
-        (a) =>
-          a.asset_type === transactionDto.asset_type &&
-          a.symbol === transactionDto.symbol
-      );
-      if (!asset || asset.units < transactionDto.units) {
-        throw new Error("Insufficient assets for sale");
-      }
-      const updatedPortfolio = updateAsset(
-        {
-          ...portfolio,
-          cash: portfolio.cash + totalCost,
-        },
+
+      const id = await deps.idUtils.generate();
+      return deps.portfolioRepository.addTransaction(
+        id,
+        portfolioId,
         transactionDto
       );
-      await deps.portfolioRepository.update(portfolioId, updatedPortfolio);
     }
+
+    // Handle sell transaction
+    const asset = portfolio.assets.find(
+      (a) =>
+        a.asset_type === transactionDto.asset_type &&
+        a.symbol === transactionDto.symbol
+    );
+
+    if (!asset || asset.units < transactionDto.units) {
+      throw new Error("Insufficient assets for sale");
+    }
+
+    const updatedPortfolio = updateAsset(
+      {
+        ...portfolio,
+        cash: portfolio.cash + totalCost,
+      },
+      transactionDto
+    );
+    await deps.portfolioRepository.update(portfolioId, updatedPortfolio);
 
     const id = await deps.idUtils.generate();
     return deps.portfolioRepository.addTransaction(
