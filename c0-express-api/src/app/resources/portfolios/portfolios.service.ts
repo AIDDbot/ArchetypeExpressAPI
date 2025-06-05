@@ -1,5 +1,10 @@
 // --- Types ---
 import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
+import {
+  BusinessLogicError,
+  NotFoundError,
+  ValidationError,
+} from "../../shared/errors/base.error.ts";
 import type { CreatePortfolioDto } from "./create-portfolio.dto.ts";
 import type { CreateTransactionDto } from "./create-transaction.dto.ts";
 import type { Portfolio } from "./portfolio.type.ts";
@@ -23,8 +28,13 @@ const updateAsset = (
   // Handle new asset creation for buy transactions
   if (assetIndex === -1) {
     if (transaction.type !== "buy") {
-      // throw error, selling is not allowed for not existing assets
-      throw new Error("Selling is not allowed for not existing assets");
+      throw new BusinessLogicError(
+        "Selling is not allowed for not existing assets",
+        {
+          assetType: transaction.asset_type,
+          symbol: transaction.symbol,
+        }
+      );
     }
 
     return {
@@ -101,7 +111,9 @@ export const portfoliosService = {
     deps: Dependencies
   ): Promise<Portfolio> => {
     if (createDto.initial_cash < 0) {
-      throw new Error("Initial cash cannot be negative");
+      throw new ValidationError("Initial cash cannot be negative", {
+        initialCash: createDto.initial_cash,
+      });
     }
     const id = await deps.idUtils.generate();
     return deps.portfolioRepository.create(id, createDto);
@@ -113,7 +125,9 @@ export const portfoliosService = {
   ): Promise<Portfolio> => {
     const portfolio = await deps.portfolioRepository.findById(id);
     if (!portfolio) {
-      throw new Error(`Portfolio not found with id ${id}`);
+      throw new NotFoundError(`Portfolio not found with id ${id}`, {
+        portfolioId: id,
+      });
     }
     return portfolio;
   },
@@ -129,7 +143,9 @@ export const portfoliosService = {
   ): Promise<Transaction> => {
     const portfolio = await deps.portfolioRepository.findById(portfolioId);
     if (!portfolio) {
-      throw new Error(`Portfolio not found with id ${portfolioId}`);
+      throw new NotFoundError(`Portfolio not found with id ${portfolioId}`, {
+        portfolioId,
+      });
     }
 
     const totalCost = transactionDto.units * transactionDto.price_per_unit;
@@ -137,7 +153,11 @@ export const portfoliosService = {
     // Handle buy transaction
     if (transactionDto.type === "buy") {
       if (portfolio.cash < totalCost) {
-        throw new Error("Insufficient funds for purchase");
+        throw new BusinessLogicError("Insufficient funds for purchase", {
+          required: totalCost,
+          available: portfolio.cash,
+          transaction: transactionDto,
+        });
       }
 
       const updatedPortfolio = updateAsset(
@@ -165,7 +185,12 @@ export const portfoliosService = {
     );
 
     if (!asset || asset.units < transactionDto.units) {
-      throw new Error("Insufficient assets for sale");
+      throw new BusinessLogicError("Insufficient assets for sale", {
+        assetType: transactionDto.asset_type,
+        symbol: transactionDto.symbol,
+        requested: transactionDto.units,
+        available: asset?.units || 0,
+      });
     }
 
     const updatedPortfolio = updateAsset(
@@ -191,7 +216,9 @@ export const portfoliosService = {
   ): Promise<Transaction[]> => {
     const portfolio = await deps.portfolioRepository.findById(portfolioId);
     if (!portfolio) {
-      throw new Error(`Portfolio not found with id ${portfolioId}`);
+      throw new NotFoundError(`Portfolio not found with id ${portfolioId}`, {
+        portfolioId,
+      });
     }
     return deps.portfolioRepository.findTransactionsByPortfolioId(portfolioId);
   },

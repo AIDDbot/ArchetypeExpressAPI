@@ -10,6 +10,7 @@ import {
   getTransactionsForPortfolio,
 } from "./portfolios.application.ts";
 // --- Shared ---
+import { ValidationError } from "../../shared/errors/base.error.ts";
 import type { ErrorResDTO } from "../../shared/request/error.res.dto.ts";
 import { sendError, sendSuccess } from "../../shared/request/response.utils.ts";
 // --- Types ---
@@ -32,14 +33,19 @@ async function createPortfolioHandler(
 ) {
   const createDto = req.body as CreatePortfolioDto;
   if (!createDto.name) {
-    sendError(res, 400, "Invalid request");
+    sendError(
+      res,
+      new ValidationError("Portfolio name is required", {
+        received: createDto,
+      })
+    );
     return;
   }
   try {
     const portfolio = await createPortfolio(createDto);
     sendSuccess(res, 201, portfolio);
   } catch (error) {
-    sendError(res, 400, "Failed to create portfolio");
+    sendError(res, error);
   }
 }
 
@@ -51,7 +57,7 @@ async function getAllPortfoliosHandler(
     const portfolios = await getAllPortfolios();
     sendSuccess(res, 200, portfolios);
   } catch (error) {
-    sendError(res, 500, "Failed to fetch portfolios");
+    sendError(res, error);
   }
 }
 
@@ -61,14 +67,14 @@ async function getPortfolioByIdHandler(
 ) {
   const { id } = req.params;
   if (!id) {
-    sendError(res, 400, "Invalid portfolio ID");
+    sendError(res, new ValidationError("Portfolio ID is required"));
     return;
   }
   try {
     const portfolio = await getPortfolioById(id);
     sendSuccess(res, 200, portfolio);
   } catch (error) {
-    sendError(res, 404, "Portfolio not found");
+    sendError(res, error);
   }
 }
 
@@ -79,14 +85,19 @@ async function createTransactionHandler(
   const { id } = req.params;
   const transactionDto = req.body as CreateTransactionDto;
   if (!id || !transactionDto) {
-    sendError(res, 400, "Invalid request");
+    sendError(
+      res,
+      new ValidationError("Portfolio ID and transaction data are required", {
+        received: { id, transactionDto },
+      })
+    );
     return;
   }
   try {
     const transaction = await executeTransaction(id, transactionDto);
     sendSuccess(res, 201, transaction);
   } catch (error) {
-    sendError(res, 400, "Failed to execute transaction");
+    sendError(res, error);
   }
 }
 
@@ -96,13 +107,13 @@ async function getTransactionsHandler(
 ) {
   const { id } = req.params;
   if (!id) {
-    sendError(res, 400, "Invalid portfolio ID");
+    sendError(res, new ValidationError("Portfolio ID is required"));
     return;
   }
   try {
     const transactions = await getTransactionsForPortfolio(id);
     sendSuccess(res, 200, transactions);
   } catch (error) {
-    sendError(res, 404, "Portfolio not found");
+    sendError(res, error);
   }
 }
