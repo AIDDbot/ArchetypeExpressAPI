@@ -12,10 +12,10 @@ Content-Type: application/json
 GET http://localhost:3000/portfolios
 
 ### Get portfolio by ID
-GET http://localhost:3000/portfolios/207bb001tsimbjixqor
+GET http://localhost:3000/portfolios/89.1
 
 ### Buy asset
-POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+POST http://localhost:3000/portfolios/89.1/transactions
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### Sell asset
-POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+POST http://localhost:3000/portfolios/89.1/transactions
 Content-Type: application/json
 
 {
@@ -39,10 +39,10 @@ Content-Type: application/json
 }
 
 ### List transactions for a portfolio
-GET http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+GET http://localhost:3000/portfolios/89.1/transactions
 
 ### Buy too many assets
-POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+POST http://localhost:3000/portfolios/89.1/transactions
 Content-Type: application/json
 
 {
@@ -54,7 +54,7 @@ Content-Type: application/json
 }
 
 ### Sell too many assets
-POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+POST http://localhost:3000/portfolios/89.1/transactions
 Content-Type: application/json
 
 {
@@ -66,13 +66,13 @@ Content-Type: application/json
 }
 
 ### Sell All the units of an asset
-POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+POST http://localhost:3000/portfolios/89.1/transactions
 Content-Type: application/json
 
 {
   "type": "sell",
   "asset_type": "stock",
   "symbol": "AAPL",
-  "units": 10,
+  "units": 5,
   "price_per_unit": 250
 }
