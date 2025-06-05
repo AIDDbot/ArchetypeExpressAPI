@@ -3,7 +3,7 @@ import { logError, logInfo } from "../utils/logger.utils.ts";
 
 export function sendError(
   res: Response,
-  error: unknown = 500,
+  error: Error | number = 500,
   message: string = "Unknown error"
 ) {
   let status = 500;
@@ -19,9 +19,6 @@ export function sendError(
     }
   } else if (typeof error === "number") {
     status = error;
-  } else if (typeof error === "object" && error !== null) {
-    // Handle case where error is an object but not an Error instance
-    errorMessage = JSON.stringify(error);
   }
 
   logError(

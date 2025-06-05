@@ -12,10 +12,10 @@ Content-Type: application/json
 GET http://localhost:3000/portfolios
 
 ### Get portfolio by ID
-GET http://localhost:3000/portfolios/{{portfolio_id}}
+GET http://localhost:3000/portfolios/207bb001tsimbjixqor
 
 ### Buy asset
-POST http://localhost:3000/portfolios/{{portfolio_id}}/transactions
+POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### Sell asset
-POST http://localhost:3000/portfolios/{{portfolio_id}}/transactions
+POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
 Content-Type: application/json
 
 {
@@ -39,4 +39,40 @@ Content-Type: application/json
 }
 
 ### List transactions for a portfolio
-GET http://localhost:3000/portfolios/{{portfolio_id}}/transactions
+GET http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+
+### Buy too many assets
+POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+Content-Type: application/json
+
+{
+  "type": "buy",
+  "asset_type": "stock",
+  "symbol": "AAPL",
+  "units": 1000000,
+  "price_per_unit": 150
+}
+
+### Sell too many assets
+POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+Content-Type: application/json
+
+{
+  "type": "sell",
+  "asset_type": "stock",
+  "symbol": "AAPL",
+  "units": 1000000,
+  "price_per_unit": 150
+}
+
+### Sell All the units of an asset
+POST http://localhost:3000/portfolios/207bb001tsimbjixqor/transactions
+Content-Type: application/json
+
+{
+  "type": "sell",
+  "asset_type": "stock",
+  "symbol": "AAPL",
+  "units": 10,
+  "price_per_unit": 250
+}
