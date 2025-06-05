@@ -1,63 +1,108 @@
+// --- Express ---
 import type { Request, Response } from "express";
 import { Router } from "express";
+// --- Application ---
+import {
+  createPortfolio,
+  executeTransaction,
+  getAllPortfolios,
+  getPortfolioById,
+  getTransactionsForPortfolio,
+} from "./portfolios.application.ts";
+// --- Shared ---
+import type { ErrorResDTO } from "../../shared/request/error.res.dto.ts";
 import { sendError, sendSuccess } from "../../shared/request/response.utils.ts";
+// --- Types ---
 import type { CreatePortfolioDto } from "./create-portfolio.dto.ts";
 import type { CreateTransactionDto } from "./create-transaction.dto.ts";
-import * as portfoliosApplication from "./portfolios.application.ts";
+import type { Portfolio } from "./portfolio.type.ts";
+import type { Transaction } from "./transaction.type.ts";
 
-const router = Router();
+export const portfoliosController = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+portfoliosController.post("/", createPortfolioHandler);
+portfoliosController.get("/", getAllPortfoliosHandler);
+portfoliosController.get("/:id", getPortfolioByIdHandler);
+portfoliosController.post("/:id/transactions", createTransactionHandler);
+portfoliosController.get("/:id/transactions", getTransactionsHandler);
+
+async function createPortfolioHandler(
+  req: Request,
+  res: Response<Portfolio | ErrorResDTO>
+) {
+  const createDto = req.body as CreatePortfolioDto;
+  if (!createDto.name) {
+    sendError(res, 400, "Invalid request");
+    return;
+  }
   try {
-    const createDto: CreatePortfolioDto = req.body;
-    const portfolio = await portfoliosApplication.createPortfolio(createDto);
+    const portfolio = await createPortfolio(createDto);
     sendSuccess(res, 201, portfolio);
   } catch (error) {
-    sendError(res, error);
+    sendError(res, 400, "Failed to create portfolio");
   }
-});
+}
 
-router.get("/", async (_req: Request, res: Response) => {
+async function getAllPortfoliosHandler(
+  _req: Request,
+  res: Response<Portfolio[] | ErrorResDTO>
+) {
   try {
-    const portfolios = await portfoliosApplication.getAllPortfolios();
+    const portfolios = await getAllPortfolios();
     sendSuccess(res, 200, portfolios);
   } catch (error) {
-    sendError(res, error);
+    sendError(res, 500, "Failed to fetch portfolios");
   }
-});
+}
 
-router.get("/:id", async (req: Request, res: Response) => {
+async function getPortfolioByIdHandler(
+  req: Request,
+  res: Response<Portfolio | ErrorResDTO>
+) {
+  const { id } = req.params;
+  if (!id) {
+    sendError(res, 400, "Invalid portfolio ID");
+    return;
+  }
   try {
-    const portfolio = await portfoliosApplication.getPortfolioById(
-      req.params.id
-    );
+    const portfolio = await getPortfolioById(id);
     sendSuccess(res, 200, portfolio);
   } catch (error) {
-    sendError(res, error);
+    sendError(res, 404, "Portfolio not found");
   }
-});
+}
 
-router.post("/:id/transactions", async (req: Request, res: Response) => {
+async function createTransactionHandler(
+  req: Request,
+  res: Response<Transaction | ErrorResDTO>
+) {
+  const { id } = req.params;
+  const transactionDto = req.body as CreateTransactionDto;
+  if (!id || !transactionDto) {
+    sendError(res, 400, "Invalid request");
+    return;
+  }
   try {
-    const transactionDto: CreateTransactionDto = req.body;
-    const transaction = await portfoliosApplication.executeTransaction(
-      req.params.id,
-      transactionDto
-    );
+    const transaction = await executeTransaction(id, transactionDto);
     sendSuccess(res, 201, transaction);
   } catch (error) {
-    sendError(res, error);
+    sendError(res, 400, "Failed to execute transaction");
   }
-});
+}
 
-router.get("/:id/transactions", async (req: Request, res: Response) => {
+async function getTransactionsHandler(
+  req: Request,
+  res: Response<Transaction[] | ErrorResDTO>
+) {
+  const { id } = req.params;
+  if (!id) {
+    sendError(res, 400, "Invalid portfolio ID");
+    return;
+  }
   try {
-    const transactions =
-      await portfoliosApplication.getTransactionsForPortfolio(req.params.id);
+    const transactions = await getTransactionsForPortfolio(id);
     sendSuccess(res, 200, transactions);
   } catch (error) {
-    sendError(res, error);
+    sendError(res, 404, "Portfolio not found");
   }
-});
-
-export default router;
+}

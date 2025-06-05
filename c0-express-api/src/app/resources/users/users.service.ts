@@ -1,3 +1,4 @@
+// --- Types ---
 import type { HashUtils } from "../../shared/crypto/hash.utils.interface.ts";
 import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
 import type { JwtUtils } from "../../shared/crypto/jwt.utils.interface.ts";

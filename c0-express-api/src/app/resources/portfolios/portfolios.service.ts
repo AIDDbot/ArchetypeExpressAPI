@@ -1,3 +1,5 @@
+// --- Types ---
+import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
 import type { CreatePortfolioDto } from "./create-portfolio.dto.ts";
 import type { CreateTransactionDto } from "./create-transaction.dto.ts";
 import type { Portfolio } from "./portfolio.type.ts";
@@ -6,45 +8,136 @@ import type { Transaction } from "./transaction.type.ts";
 
 type Dependencies = {
   portfolioRepository: PortfolioRepository;
+  idUtils: IdUtils;
 };
 
-export class PortfolioService {
-  async createPortfolio(
-    createDto: CreatePortfolioDto,
-    deps: Dependencies
-  ): Promise<Portfolio> {
-    if (createDto.initial_cash < 0) {
-      throw new Error("Initial cash cannot be negative");
-    }
-    return deps.portfolioRepository.create(createDto);
-  }
+const updateAsset = (
+  portfolio: Portfolio,
+  transaction: CreateTransactionDto
+): Portfolio => {
+  const assetIndex = portfolio.assets.findIndex(
+    (a) =>
+      a.asset_type === transaction.asset_type && a.symbol === transaction.symbol
+  );
 
-  async getPortfolioById(id: string, deps: Dependencies): Promise<Portfolio> {
-    const portfolio = await deps.portfolioRepository.findById(id);
-    if (!portfolio) {
-      throw new Error("Portfolio not found");
+  if (assetIndex === -1) {
+    if (transaction.type === "buy") {
+      return {
+        ...portfolio,
+        assets: [
+          ...portfolio.assets,
+          {
+            asset_type: transaction.asset_type,
+            symbol: transaction.symbol,
+            units: transaction.units,
+            average_price: transaction.price_per_unit,
+            lastUpdated: new Date(),
+          },
+        ],
+      };
     }
     return portfolio;
   }
 
-  async getAllPortfolios(deps: Dependencies): Promise<Portfolio[]> {
-    return deps.portfolioRepository.findAll();
+  const asset = portfolio.assets[assetIndex];
+  if (transaction.type === "buy") {
+    const totalUnits = asset.units + transaction.units;
+    const totalValue =
+      asset.units * asset.average_price +
+      transaction.units * transaction.price_per_unit;
+    const updatedAsset = {
+      ...asset,
+      average_price: totalValue / totalUnits,
+      units: totalUnits,
+      lastUpdated: new Date(),
+    };
+    return {
+      ...portfolio,
+      assets: [
+        ...portfolio.assets.slice(0, assetIndex),
+        updatedAsset,
+        ...portfolio.assets.slice(assetIndex + 1),
+      ],
+    };
   }
 
-  async executeTransaction(
+  const updatedAsset = {
+    ...asset,
+    units: asset.units - transaction.units,
+    lastUpdated: new Date(),
+  };
+
+  if (updatedAsset.units === 0) {
+    return {
+      ...portfolio,
+      assets: [
+        ...portfolio.assets.slice(0, assetIndex),
+        ...portfolio.assets.slice(assetIndex + 1),
+      ],
+    };
+  }
+
+  return {
+    ...portfolio,
+    assets: [
+      ...portfolio.assets.slice(0, assetIndex),
+      updatedAsset,
+      ...portfolio.assets.slice(assetIndex + 1),
+    ],
+  };
+};
+
+export const portfoliosService = {
+  createPortfolio: async (
+    createDto: CreatePortfolioDto,
+    deps: Dependencies
+  ): Promise<Portfolio> => {
+    if (createDto.initial_cash < 0) {
+      throw new Error("Initial cash cannot be negative");
+    }
+    const id = await deps.idUtils.generate();
+    return deps.portfolioRepository.create(id, createDto);
+  },
+
+  getPortfolioById: async (
+    id: string,
+    deps: Dependencies
+  ): Promise<Portfolio> => {
+    const portfolio = await deps.portfolioRepository.findById(id);
+    if (!portfolio) {
+      throw new Error(`Portfolio not found with id ${id}`);
+    }
+    return portfolio;
+  },
+
+  getAllPortfolios: async (deps: Dependencies): Promise<Portfolio[]> => {
+    return deps.portfolioRepository.findAll();
+  },
+
+  executeTransaction: async (
     portfolioId: string,
     transactionDto: CreateTransactionDto,
     deps: Dependencies
-  ): Promise<Transaction> {
-    const portfolio = await this.getPortfolioById(portfolioId, deps);
+  ): Promise<Transaction> => {
+    const portfolio = await deps.portfolioRepository.findById(portfolioId);
+    if (!portfolio) {
+      throw new Error(`Portfolio not found with id ${portfolioId}`);
+    }
+
     const totalCost = transactionDto.units * transactionDto.price_per_unit;
 
     if (transactionDto.type === "buy") {
       if (portfolio.cash < totalCost) {
-        throw new Error("Insufficient funds");
+        throw new Error("Insufficient funds for purchase");
       }
-      portfolio.cash -= totalCost;
-      this.updateAsset(portfolio, transactionDto);
+      const updatedPortfolio = updateAsset(
+        {
+          ...portfolio,
+          cash: portfolio.cash - totalCost,
+        },
+        transactionDto
+      );
+      await deps.portfolioRepository.update(portfolioId, updatedPortfolio);
     } else {
       const asset = portfolio.assets.find(
         (a) =>
@@ -52,61 +145,34 @@ export class PortfolioService {
           a.symbol === transactionDto.symbol
       );
       if (!asset || asset.units < transactionDto.units) {
-        throw new Error("Insufficient assets");
+        throw new Error("Insufficient assets for sale");
       }
-      portfolio.cash += totalCost;
-      this.updateAsset(portfolio, transactionDto);
+      const updatedPortfolio = updateAsset(
+        {
+          ...portfolio,
+          cash: portfolio.cash + totalCost,
+        },
+        transactionDto
+      );
+      await deps.portfolioRepository.update(portfolioId, updatedPortfolio);
     }
 
-    await deps.portfolioRepository.update(portfolioId, portfolio);
-    return deps.portfolioRepository.addTransaction(portfolioId, transactionDto);
-  }
-
-  private updateAsset(
-    portfolio: Portfolio,
-    transaction: CreateTransactionDto
-  ): void {
-    const assetIndex = portfolio.assets.findIndex(
-      (a) =>
-        a.asset_type === transaction.asset_type &&
-        a.symbol === transaction.symbol
+    const id = await deps.idUtils.generate();
+    return deps.portfolioRepository.addTransaction(
+      id,
+      portfolioId,
+      transactionDto
     );
+  },
 
-    if (assetIndex === -1) {
-      if (transaction.type === "buy") {
-        portfolio.assets.push({
-          asset_type: transaction.asset_type,
-          symbol: transaction.symbol,
-          units: transaction.units,
-          average_price: transaction.price_per_unit,
-          lastUpdated: new Date(),
-        });
-      }
-      return;
-    }
-
-    const asset = portfolio.assets[assetIndex];
-    if (transaction.type === "buy") {
-      const totalUnits = asset.units + transaction.units;
-      const totalValue =
-        asset.units * asset.average_price +
-        transaction.units * transaction.price_per_unit;
-      asset.average_price = totalValue / totalUnits;
-      asset.units = totalUnits;
-    } else {
-      asset.units -= transaction.units;
-      if (asset.units === 0) {
-        portfolio.assets.splice(assetIndex, 1);
-      }
-    }
-    asset.lastUpdated = new Date();
-  }
-
-  async getTransactionsForPortfolio(
+  getTransactionsForPortfolio: async (
     portfolioId: string,
     deps: Dependencies
-  ): Promise<Transaction[]> {
-    await this.getPortfolioById(portfolioId, deps);
+  ): Promise<Transaction[]> => {
+    const portfolio = await deps.portfolioRepository.findById(portfolioId);
+    if (!portfolio) {
+      throw new Error(`Portfolio not found with id ${portfolioId}`);
+    }
     return deps.portfolioRepository.findTransactionsByPortfolioId(portfolioId);
-  }
-}
+  },
+};

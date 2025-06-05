@@ -30,6 +30,7 @@
 		"*.prompt.md": "pascal",
 		"*.template.md": "textlint",
 		"*.adapter.ts": "adonis",
+    "*.application.ts": "adonis",
 		"*.builder.ts": "unocss",
 		"*.command.ts": "console",
 		"*.component.ts": "html",

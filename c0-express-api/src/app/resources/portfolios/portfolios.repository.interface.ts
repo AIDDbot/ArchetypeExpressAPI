@@ -4,11 +4,12 @@ import type { Portfolio } from "./portfolio.type.ts";
 import type { Transaction } from "./transaction.type.ts";
 
 export interface PortfolioRepository {
-  create(data: CreatePortfolioDto): Promise<Portfolio>;
+  create(id: string, data: CreatePortfolioDto): Promise<Portfolio>;
   findById(id: string): Promise<Portfolio | undefined>;
   findAll(): Promise<Portfolio[]>;
   update(id: string, data: Partial<Portfolio>): Promise<Portfolio | undefined>;
   addTransaction(
+    id: string,
     portfolioId: string,
     transactionData: CreateTransactionDto
   ): Promise<Transaction>;
