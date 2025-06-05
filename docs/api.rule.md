@@ -99,38 +99,42 @@ src/app/resources/
 
 - **Responsibility**:
   - Act as an intermediary between the Controller and Service layers.
-  - Manage and inject dependencies (repositories, utility services) required by the Service Layer methods. This approach centralizes dependency configuration.
+  - Manage and inject dependencies (repositories, utility services) required by the Service Layer methods.
+  - Centralize dependency configuration and ensure all required utilities are available to the service layer.
 - **Example Structure**:
 
   ```typescript
   // --- Services ---
   import { [resourceName]Service } from "./[resource-name].service.ts";
   // --- Repositories ---
-  import { [resourceName]InMemoryRepository } from "./[resource-name].in-memory.repository.ts"; // Or actual DB repository
-  // --- Shared Utilities (if needed by service) ---
+  import { [resourceName]InMemoryRepository } from "./[resource-name].in-memory.repository.ts";
+  // --- Shared ---
+  import { idUtils } from "../../shared/crypto/id.utils.ts";
   import { hashUtils } from "../../shared/crypto/hash.utils.ts";
   // --- Types ---
-  // Import DTOs and Types
+  import type { CreateResourceDto } from "./create-resource.dto.ts";
 
-  export async function createResource(createDto: /* CreateResourceDto */): Promise</* ResourceResponseDto */> {
-    const deps = {
-      [resourceName]Repository: [resourceName]InMemoryRepository, // Swap with actual repository
-      // other utilities like hashUtils, idUtils, etc.
-    };
-    return await [resourceName]Service.create(createDto, deps);
-  }
-
-  export async function getResourceById(id: string): Promise</* ResourceResponseDto | undefined */> {
+  export async function createResource(createDto: CreateResourceDto): Promise<Resource> {
     const deps = {
       [resourceName]Repository: [resourceName]InMemoryRepository,
+      idUtils: idUtils,
+      // other utilities as needed
     };
-    return await [resourceName]Service.getById(id, deps);
+    return [resourceName]Service.create(createDto, deps);
   }
-  // ... other application functions mirroring service methods
+
+  export async function getResourceById(id: string): Promise<Resource> {
+    const deps = {
+      [resourceName]Repository: [resourceName]InMemoryRepository,
+      idUtils: idUtils,
+    };
+    return [resourceName]Service.getById(id, deps);
+  }
   ```
 
 - **Key Practices**:
   - Each exported function should prepare and pass all necessary dependencies to the corresponding service method.
+  - Always include `idUtils` in dependencies if the service needs to generate IDs.
   - Keep the application layer thin - it should only handle dependency injection and delegation.
   - Consider using a dependency injection container for larger applications.
 
@@ -138,65 +142,62 @@ src/app/resources/
 
 - **Responsibility**:
   - Implement the core business logic for the resource.
+  - Handle ID generation using the provided `idUtils` dependency.
   - Interact with the Repository Layer for data persistence.
   - Perform complex validations and business rule checks.
   - Utilize shared utilities (e.g., hashing, ID generation) passed as dependencies.
 - **Example Structure**:
 
   ```typescript
-  // --- Import types for dependencies and DTOs/entity ---
+  // --- Types ---
   import type { [ResourceName]Repository } from "./[resource-name].repository.interface.ts";
-  import type { /* CreateResourceDto */ } from "./create-[resource-name].dto.ts";
-  import type { /* Resource */ } from "./[resource-name].type.ts";
-  // import type { IdUtils, HashUtils etc. } from relevant shared paths
+  import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
+  import type { CreateResourceDto } from "./create-resource.dto.ts";
+  import type { Resource } from "./resource.type.ts";
+
+  type Dependencies = {
+    [resourceName]Repository: [ResourceName]Repository;
+    idUtils: IdUtils;
+    // other utilities as needed
+  };
 
   export const [resourceName]Service = {
     create: async (
-      createDto: /* CreateResourceDto */,
-      deps: {
-        [resourceName]Repository: [ResourceName]Repository;
-        // idUtils: IdUtils;
-        // hashUtils: HashUtils;
-      }
-    ): Promise</* Resource */> => {
-      // Example: Check for duplicates
-      // const existing = await deps.[resourceName]Repository.findByName(createDto.name);
-      // if (existing) {
-      //   throw new Error(`Resource with name ${createDto.name} already exists.`);
-      // }
+      createDto: CreateResourceDto,
+      deps: Dependencies
+    ): Promise<Resource> => {
+      // Generate ID using the provided idUtils
+      const id = await deps.idUtils.generate();
 
-      const newResource: /* Resource */ = {
-        // id: await deps.idUtils.generate(),
+      const newResource: Resource = {
+        id,
         ...createDto,
-        // createdAt: new Date(),
+        createdAt: new Date(),
       };
-      return await deps.[resourceName]Repository.insert(newResource);
+      return deps.[resourceName]Repository.insert(newResource);
     },
 
     getById: async (
       id: string,
-      deps: {
-        [resourceName]Repository: [ResourceName]Repository;
-      }
-    ): Promise</* Resource | undefined */> => {
+      deps: Dependencies
+    ): Promise<Resource> => {
       const resource = await deps.[resourceName]Repository.findById(id);
       if (!resource) {
-        // Or return undefined and let controller handle 404
-        throw new Error(`Resource with id ${id} not found.`);
+        throw new Error(`Resource with id ${id} not found`);
       }
       return resource;
     },
-    // ... other service methods (update, delete, list, etc.)
   };
   ```
 
 - **Key Practices**:
+  - Always include `idUtils` in the Dependencies type if the service needs to generate IDs.
+  - Generate IDs using `deps.idUtils.generate()` before creating new resources.
   - Methods accept a `deps` object containing all external dependencies (repositories, utilities).
-  - Throw errors for business logic failures (e.g., "not found", "already exists", "invalid operation"). These errors will be caught by the Controller.
+  - Throw errors for business logic failures (e.g., "not found", "already exists", "invalid operation").
   - Return data (entities or DTOs) upon successful operations.
   - Keep methods focused and single-responsibility.
   - Use descriptive error messages that can be safely exposed to clients.
-  - Consider implementing retry logic for external service calls.
 
 ## 7. Repository Layer
 

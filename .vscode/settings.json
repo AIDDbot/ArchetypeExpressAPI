@@ -54,6 +54,6 @@
   "workbench.colorCustomizations": {
     "statusBar.border": "#007700",
     "statusBar.background": "#007700",
-    "statusBar.foreground" : "#000000"
+    "statusBar.foreground" : "#ffffff"
   },
 }
