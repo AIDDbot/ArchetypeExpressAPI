@@ -12,7 +12,7 @@ content-type: application/json
 
 # get Current user
 GET http://localhost:3000/users/me HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3LjEiLCJpYXQiOjE3NDg2MjI3NzcsImV4cCI6MTc0ODYyNjM3N30.FU-ugg-DoGNC-cMnLek36jMq1-gFIAi4nhiaFTKSPlo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkyLjQiLCJpYXQiOjE3NDkxNDIyNzYsImV4cCI6MTc0OTE0NTg3Nn0.0yGdftu4ZAXBlRPyN2GPUevB0Kw-u5Migq3ag8wXFPY
 
 ### 
 

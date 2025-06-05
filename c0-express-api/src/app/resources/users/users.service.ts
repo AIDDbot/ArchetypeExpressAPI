@@ -2,6 +2,11 @@
 import type { HashUtils } from "../../shared/crypto/hash.utils.interface.ts";
 import type { IdUtils } from "../../shared/crypto/id.utils.interface.ts";
 import type { JwtUtils } from "../../shared/crypto/jwt.utils.interface.ts";
+import {
+  AuthenticationError,
+  BusinessLogicError,
+  NotFoundError,
+} from "../../shared/errors/base.error.ts";
 import type { LoginDto } from "./login-dto.type.ts";
 import type { RegisterDto } from "./register-dto.type.ts";
 import type { UserTokenDTO } from "./user-token.dto.ts";
@@ -22,7 +27,13 @@ export const usersService = {
       registerDto.email
     );
     if (existingUser) {
-      throw new Error(`User already exists with email ${registerDto.email}`);
+      throw new BusinessLogicError(
+        `User already exists with email ${registerDto.email}`,
+        {
+          email: registerDto.email,
+          userId: existingUser.id,
+        }
+      );
     }
     const newUser: User = {
       id: await deps.idUtils.generate(),
@@ -46,15 +57,22 @@ export const usersService = {
       jwtUtils: JwtUtils;
     }
   ): Promise<UserTokenDTO> => {
-    const validUser = await deps.usersRepository.findByEmail(loginDto.email);
-    if (!validUser) {
-      throw new Error(`User not found with email ${loginDto.email}`);
+    const existingUser = await deps.usersRepository.findByEmail(loginDto.email);
+    if (!existingUser) {
+      throw new NotFoundError(`User not found with email ${loginDto.email}`, {
+        email: loginDto.email,
+      });
     }
-    if (validUser.password !== deps.hashUtils.hashString(loginDto.password)) {
-      throw new Error("Invalid password");
+    if (
+      existingUser.password !== deps.hashUtils.hashString(loginDto.password)
+    ) {
+      throw new AuthenticationError("Invalid password", {
+        email: loginDto.email,
+        userId: existingUser.id,
+      });
     }
-    const token = deps.jwtUtils.sign({ id: validUser.id });
-    const { password, ...user } = validUser;
+    const token = deps.jwtUtils.sign({ id: existingUser.id });
+    const { password, ...user } = existingUser;
     return {
       user,
       token,
@@ -66,11 +84,13 @@ export const usersService = {
       usersRepository: UsersRepository;
     }
   ): Promise<Omit<User, "password">> => {
-    const validUser = await deps.usersRepository.findById(userId);
-    if (!validUser) {
-      throw new Error(`User not found with id ${userId}`);
+    const existingUser = await deps.usersRepository.findById(userId);
+    if (!existingUser) {
+      throw new NotFoundError(`User not found with id ${userId}`, {
+        userId,
+      });
     }
-    const { password, ...user } = validUser;
+    const { password, ...user } = existingUser;
     return user;
   },
 };
