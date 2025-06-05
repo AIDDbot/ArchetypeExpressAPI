@@ -91,6 +91,9 @@ src/app/resources/
   - Use `async/await` for handler functions.
   - Clearly type request and response objects, including DTOs.
   - Utilize `sendSuccess(res, statusCode, data)` and `sendError(res, statusCode, message)` for consistent responses.
+  - Always use `import type` for TypeScript types and interfaces.
+  - Include file extensions (`.ts`) in import statements.
+  - Use single quotes for string literals in imports.
 
 ## 5. Application Layer (`*.application.ts`)
 
@@ -128,6 +131,8 @@ src/app/resources/
 
 - **Key Practices**:
   - Each exported function should prepare and pass all necessary dependencies to the corresponding service method.
+  - Keep the application layer thin - it should only handle dependency injection and delegation.
+  - Consider using a dependency injection container for larger applications.
 
 ## 6. Service Layer (`*.service.ts`)
 
@@ -189,6 +194,9 @@ src/app/resources/
   - Methods accept a `deps` object containing all external dependencies (repositories, utilities).
   - Throw errors for business logic failures (e.g., "not found", "already exists", "invalid operation"). These errors will be caught by the Controller.
   - Return data (entities or DTOs) upon successful operations.
+  - Keep methods focused and single-responsibility.
+  - Use descriptive error messages that can be safely exposed to clients.
+  - Consider implementing retry logic for external service calls.
 
 ## 7. Repository Layer
 
@@ -213,6 +221,8 @@ src/app/resources/
 - **Key Practices**:
   - All methods should return `Promise`s.
   - Define methods relevant to the resource's data access needs.
+  - Consider adding pagination support for list operations.
+  - Include methods for bulk operations if needed.
 
 ### 7.2. Repository Implementation (`*.in-memory.repository.ts`, `*.[db-type].repository.ts`)
 
@@ -241,6 +251,8 @@ src/app/resources/
   - Implement all methods defined in the interface.
   - The in-memory repository is useful for testing and rapid prototyping.
   - For actual database interactions, create a separate file (e.g., `[resource-name].postgres.repository.ts`).
+  - Consider implementing connection pooling for database repositories.
+  - Add transaction support for operations that require atomicity.
 
 ## 8. Data Transfer Objects (DTOs) and Types
 
@@ -271,10 +283,18 @@ src/app/resources/
   export type ResourceResponseDto = Pick<Resource, "id" | "name" | "createdAt">;
   ```
 
+- **Key Practices**:
+  - Use TypeScript's utility types for type transformations.
+  - Consider using branded types for domain-specific types (e.g., `type UserId = string & { readonly brand: unique symbol }`).
+  - Add validation decorators or type guards for runtime type checking.
+  - Document complex type relationships.
+
 ## 9. Dependency Management
 
 - Dependencies (repositories, shared utilities like `hashUtils`, `jwtUtils`, `idUtils`) are explicitly passed to service methods via the `deps` object, which is constructed in the Application Layer.
 - This makes dependencies clear and facilitates mocking in tests.
+- Consider implementing a dependency injection container for larger applications.
+- Use interface segregation principle when defining dependencies.
 
 ## 10. Error Handling
 
@@ -284,11 +304,21 @@ src/app/resources/
   - Uses the shared `sendError(res, statusCode, message)` utility to send standardized JSON error responses.
   - Consider defining a common `ErrorResDTO` (e.g., `{ error: { message: string, code?: string } }`) and use it with `sendError`.
 - Refer to `src/app/shared/request/response.utils.ts` and `src/app/shared/request/error.res.dto.ts` for existing implementations.
+- **Key Practices**:
+  - Create custom error classes for different types of errors.
+  - Include error codes for client-side error handling.
+  - Log errors with appropriate severity levels.
+  - Consider implementing error boundaries for different layers.
 
 ## 11. Input Validation
 
 - **Controller Layer**: Perform basic validation, such as checking for the presence of required fields in the request body or path parameters.
 - **Service Layer**: Implement more complex business rule validations (e.g., checking if an email is already in use, validating data formats, ensuring consistency).
+- **Key Practices**:
+  - Use a validation library (e.g., Zod, Joi) for complex validations.
+  - Implement custom validators for domain-specific rules.
+  - Consider using TypeScript's type system for compile-time validation.
+  - Add validation middleware for common checks.
 
 ## 12. Testing (`*.service.test.ts`)
 
@@ -326,6 +356,13 @@ src/app/resources/
   });
   ```
 
+- **Key Practices**:
+  - Follow the Arrange-Act-Assert pattern.
+  - Use meaningful test descriptions.
+  - Test both success and failure cases.
+  - Consider using test factories for complex objects.
+  - Implement integration tests for critical paths.
+
 ## 13. Shared Utilities
 
 - Leverage and contribute to shared utility modules located in `src/app/shared/`.
@@ -333,5 +370,46 @@ src/app/resources/
   - `crypto/`: For hashing, JWT operations, ID generation.
   - `request/`: For standardized request/response handling.
 - When creating new utilities that could be used by multiple resources, place them in the `shared` directory.
+- **Key Practices**:
+  - Keep utilities pure and stateless when possible.
+  - Document utility functions with JSDoc comments.
+  - Add unit tests for utilities.
+  - Consider creating a utility index file for easier imports.
+
+## 14. Performance Considerations
+
+- Implement caching strategies where appropriate.
+- Use pagination for large data sets.
+- Consider implementing rate limiting.
+- Optimize database queries.
+- Use appropriate indexes.
+- Consider implementing request batching for multiple operations.
+
+## 15. Security Best Practices
+
+- Implement proper authentication and authorization.
+- Use HTTPS for all endpoints.
+- Sanitize and validate all input.
+- Implement rate limiting to prevent abuse.
+- Use secure headers (e.g., CORS, CSP).
+- Consider implementing API key rotation.
+- Log security-related events.
+
+## 16. Monitoring and Logging
+
+- Implement structured logging.
+- Add performance metrics.
+- Monitor error rates.
+- Track API usage.
+- Consider implementing health check endpoints.
+- Use appropriate log levels.
+
+## 17. Documentation
+
+- Document API endpoints using OpenAPI/Swagger.
+- Include examples in documentation.
+- Document error responses.
+- Keep documentation up to date.
+- Consider using TypeDoc for code documentation.
 
 By following these guidelines, new API endpoints will maintain consistency with the existing codebase, ensuring they are robust, testable, and easy to understand.
