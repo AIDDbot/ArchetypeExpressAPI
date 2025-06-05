@@ -4,6 +4,7 @@ import { Router } from "express";
 // --- Application ---
 import { createLogEntry } from "./logs.application.ts";
 // --- Shared ---
+import { ValidationError } from "../../shared/errors/base.error.ts";
 import {
   getIpFrom,
   getSourceFrom,
@@ -19,19 +20,26 @@ logsController.get("/", logsGetHandler);
 logsController.post("/", postHandler);
 
 async function logsGetHandler(req: Request, res: Response<ErrorResDTO>) {
-  sendError(res, 405, "Method not allowed");
+  sendError(
+    res,
+    new ValidationError("Method not allowed", { method: req.method })
+  );
 }
+
 async function postHandler(
   req: Request,
   res: Response<IdResDTO | ErrorResDTO>
 ) {
-  const logEntry: LogEntryDTO = req.body as LogEntryDTO;
-  if (!logEntry || Object.keys(logEntry).length === 0) {
-    sendError(res, 400, "Log entry is required");
+  const logEntry: LogEntryDTO | undefined = req.body as LogEntryDTO;
+  if (!logEntry) {
+    sendError(res, new ValidationError("Request body is required"));
     return;
   }
+
+  // Add default values for source and IP if not provided
   logEntry.source = logEntry.source || getSourceFrom(req);
   logEntry.ip = logEntry.ip || getIpFrom(req);
+
   try {
     const createdLogEntry = await createLogEntry(logEntry);
     const logEntryPostResDTO: IdResDTO = {
@@ -39,7 +47,6 @@ async function postHandler(
     };
     sendSuccess(res, 201, logEntryPostResDTO);
   } catch (error) {
-    console.error(error);
-    sendError(res, 204, "");
+    sendError(res, error);
   }
 }
