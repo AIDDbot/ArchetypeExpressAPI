@@ -23,7 +23,76 @@
           "port": "3000",
           "path": ["portfolios"]
         }
-      }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"user-123\",\n  \"name\": \"Growth Portfolio\",\n  \"initial_cash\": 10000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/portfolios",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "id": "portfolio-123",
+            "user_id": "user-123",
+            "name": "Growth Portfolio",
+            "initial_cash": 10000,
+            "cash": 10000,
+            "lastUpdated": "2024-03-20T10:00:00.000Z",
+            "assets": []
+          }
+        },
+        {
+          "name": "Validation Error",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"user-123\",\n  \"name\": \"Growth Portfolio\",\n  \"initial_cash\": -1000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/portfolios",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "error": {
+              "message": "Initial cash cannot be negative",
+              "details": {
+                "initialCash": -1000
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "name": "Get All Portfolios",
@@ -36,7 +105,38 @@
           "port": "3000",
           "path": ["portfolios"]
         }
-      }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/portfolios",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": [
+            {
+              "id": "portfolio-123",
+              "user_id": "user-123",
+              "name": "Growth Portfolio",
+              "initial_cash": 10000,
+              "cash": 10000,
+              "lastUpdated": "2024-03-20T10:00:00.000Z",
+              "assets": []
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Get Portfolio by ID",
@@ -49,7 +149,62 @@
           "port": "3000",
           "path": ["portfolios", "{{portfolio_id}}"]
         }
-      }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/portfolios/portfolio-123",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "portfolio-123"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "id": "portfolio-123",
+            "user_id": "user-123",
+            "name": "Growth Portfolio",
+            "initial_cash": 10000,
+            "cash": 10000,
+            "lastUpdated": "2024-03-20T10:00:00.000Z",
+            "assets": []
+          }
+        },
+        {
+          "name": "Not Found Error",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/portfolios/non-existent",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "non-existent"]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "error": {
+              "message": "Portfolio not found with id non-existent",
+              "details": {
+                "portfolioId": "non-existent"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "name": "Buy Asset",
@@ -69,7 +224,85 @@
           "port": "3000",
           "path": ["portfolios", "{{portfolio_id}}", "transactions"]
         }
-      }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"buy\",\n  \"asset_type\": \"stock\",\n  \"symbol\": \"AAPL\",\n  \"units\": 10,\n  \"price_per_unit\": 150\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/portfolios/portfolio-123/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "portfolio-123", "transactions"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "id": "transaction-123",
+            "portfolio_id": "portfolio-123",
+            "timestamp": "2024-03-20T10:00:00.000Z",
+            "type": "buy",
+            "asset_type": "stock",
+            "symbol": "AAPL",
+            "units": 10,
+            "price_per_unit": 150
+          }
+        },
+        {
+          "name": "Insufficient Funds Error",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"buy\",\n  \"asset_type\": \"stock\",\n  \"symbol\": \"AAPL\",\n  \"units\": 1000,\n  \"price_per_unit\": 150\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/portfolios/portfolio-123/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "portfolio-123", "transactions"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "error": {
+              "message": "Insufficient funds for purchase",
+              "details": {
+                "required": 150000,
+                "available": 10000,
+                "transaction": {
+                  "type": "buy",
+                  "asset_type": "stock",
+                  "symbol": "AAPL",
+                  "units": 1000,
+                  "price_per_unit": 150
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "name": "Sell Asset",
@@ -89,7 +322,80 @@
           "port": "3000",
           "path": ["portfolios", "{{portfolio_id}}", "transactions"]
         }
-      }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sell\",\n  \"asset_type\": \"stock\",\n  \"symbol\": \"AAPL\",\n  \"units\": 5,\n  \"price_per_unit\": 160\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/portfolios/portfolio-123/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "portfolio-123", "transactions"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "id": "transaction-124",
+            "portfolio_id": "portfolio-123",
+            "timestamp": "2024-03-20T10:00:00.000Z",
+            "type": "sell",
+            "asset_type": "stock",
+            "symbol": "AAPL",
+            "units": 5,
+            "price_per_unit": 160
+          }
+        },
+        {
+          "name": "Insufficient Assets Error",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sell\",\n  \"asset_type\": \"stock\",\n  \"symbol\": \"AAPL\",\n  \"units\": 20,\n  \"price_per_unit\": 160\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/portfolios/portfolio-123/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "portfolio-123", "transactions"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "error": {
+              "message": "Insufficient assets for sale",
+              "details": {
+                "assetType": "stock",
+                "symbol": "AAPL",
+                "requested": 20,
+                "available": 10
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "name": "List Transactions",
@@ -102,13 +408,81 @@
           "port": "3000",
           "path": ["portfolios", "{{portfolio_id}}", "transactions"]
         }
-      }
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/portfolios/portfolio-123/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "portfolio-123", "transactions"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": [
+            {
+              "id": "transaction-123",
+              "portfolio_id": "portfolio-123",
+              "timestamp": "2024-03-20T10:00:00.000Z",
+              "type": "buy",
+              "asset_type": "stock",
+              "symbol": "AAPL",
+              "units": 10,
+              "price_per_unit": 150
+            },
+            {
+              "id": "transaction-124",
+              "portfolio_id": "portfolio-123",
+              "timestamp": "2024-03-20T10:00:00.000Z",
+              "type": "sell",
+              "asset_type": "stock",
+              "symbol": "AAPL",
+              "units": 5,
+              "price_per_unit": 160
+            }
+          ]
+        },
+        {
+          "name": "Not Found Error",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/portfolios/non-existent/transactions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["portfolios", "non-existent", "transactions"]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "error": {
+              "message": "Portfolio not found with id non-existent",
+              "details": {
+                "portfolioId": "non-existent"
+              }
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [
     {
       "key": "portfolio_id",
-      "value": "replace-with-id"
+      "value": "portfolio-123"
     }
   ]
 }

@@ -21,6 +21,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Portfolio'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: Get all portfolios
       responses:
@@ -51,6 +57,10 @@ paths:
                 $ref: '#/components/schemas/Portfolio'
         '404':
           description: Portfolio not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /portfolios/{id}/transactions:
     post:
@@ -76,8 +86,16 @@ paths:
                 $ref: '#/components/schemas/Transaction'
         '400':
           description: Invalid transaction (e.g., insufficient funds)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Portfolio not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
     get:
       summary: Get all transactions for a portfolio
@@ -96,6 +114,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Transaction'
+        '404':
+          description: Portfolio not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -110,9 +134,11 @@ components:
         initial_cash:
           type: number
           format: float
+          minimum: 0
 
     Portfolio:
       type: object
+      required: [id, user_id, name, initial_cash, cash, lastUpdated, assets]
       properties:
         id:
           type: string
@@ -122,8 +148,10 @@ components:
           type: string
         initial_cash:
           type: number
+          format: float
         cash:
           type: number
+          format: float
         lastUpdated:
           type: string
           format: date-time
@@ -134,15 +162,21 @@ components:
 
     Asset:
       type: object
+      required: [asset_type, symbol, units, average_price, lastUpdated]
       properties:
         asset_type:
           type: string
+          enum: [stock, crypto, bond]
         symbol:
           type: string
         units:
           type: number
+          format: float
+          minimum: 0
         average_price:
           type: number
+          format: float
+          minimum: 0
         lastUpdated:
           type: string
           format: date-time
@@ -156,22 +190,57 @@ components:
           enum: [buy, sell]
         asset_type:
           type: string
+          enum: [stock, crypto, bond]
         symbol:
           type: string
         units:
           type: number
+          format: float
+          minimum: 0
         price_per_unit:
           type: number
+          format: float
+          minimum: 0
 
     Transaction:
-      allOf:
-        - $ref: '#/components/schemas/TransactionInput'
-        - type: object
+      type: object
+      required: [id, portfolio_id, timestamp, type, asset_type, symbol, units, price_per_unit]
+      properties:
+        id:
+          type: string
+        portfolio_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: [buy, sell]
+        asset_type:
+          type: string
+          enum: [stock, crypto, bond]
+        symbol:
+          type: string
+        units:
+          type: number
+          format: float
+          minimum: 0
+        price_per_unit:
+          type: number
+          format: float
+          minimum: 0
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [message]
           properties:
-            id:
+            message:
               type: string
-            portfolio_id:
+            code:
               type: string
-            timestamp:
-              type: string
-              format: date-time
+            details:
+              type: object
