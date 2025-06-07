@@ -10,22 +10,30 @@ import {
   getTransactionsForPortfolio,
 } from "./portfolios.application.ts";
 // --- Shared ---
-import { ValidationError } from "../../shared/errors/base.error.ts";
+import {
+  NotFoundError,
+  ValidationError,
+} from "../../shared/errors/base.error.ts";
 import type { ErrorResDTO } from "../../shared/request/error.res.dto.ts";
 import { sendError, sendSuccess } from "../../shared/request/response.utils.ts";
 // --- Types ---
+import { authMiddleware } from "../../middleware/auth.middleware.ts";
 import type { CreatePortfolioDto } from "./create-portfolio.dto.ts";
 import type { CreateTransactionDto } from "./create-transaction.dto.ts";
 import type { Portfolio } from "./portfolio.type.ts";
 import type { Transaction } from "./transaction.type.ts";
 
 export const portfoliosController = Router();
-
+portfoliosController.use(authMiddleware);
 portfoliosController.post("/", createPortfolioHandler);
 portfoliosController.get("/", getAllPortfoliosHandler);
 portfoliosController.get("/:id", getPortfolioByIdHandler);
 portfoliosController.post("/:id/transactions", createTransactionHandler);
 portfoliosController.get("/:id/transactions", getTransactionsHandler);
+// catch all route
+portfoliosController.all(/(.*)/, (req, res) => {
+  sendError(res, new NotFoundError("Portfolio Route not found: " + req.url));
+});
 
 async function createPortfolioHandler(
   req: Request,

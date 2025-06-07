@@ -14,6 +14,6 @@ export const logMiddleware = (
   const ip = getIpFrom(req);
   const source = getSourceFrom(req);
   //logInfo(message, ip, source);
-  console.log(message);
+  console.log(message, req.body);
   next();
 };

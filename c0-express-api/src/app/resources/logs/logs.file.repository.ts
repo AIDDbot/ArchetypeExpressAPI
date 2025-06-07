@@ -8,6 +8,7 @@ const FILE_PATH = "./tmp/logs.csv";
 export const logsFileRepository: LogsRepository = {
   save: async (logEntry: LogEntry) => {
     const logLine = mapLogEntryToCsv(logEntry);
+    console.log(logLine);
     await file.appendLine(FILE_PATH, logLine);
   },
 };

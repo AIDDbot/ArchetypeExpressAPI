@@ -40,12 +40,10 @@ export function sendError(
   );
 
   res.status(status).json({
-    error: {
-      code: errorCode,
-      message: errorMessage,
-      ...(details && { details }),
-      timestamp: new Date().toISOString(),
-    },
+    code: errorCode,
+    message: errorMessage,
+    ...(details && { details }),
+    timestamp: new Date().toISOString(),
   });
 }
 

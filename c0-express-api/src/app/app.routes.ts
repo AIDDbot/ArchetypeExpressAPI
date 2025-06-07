@@ -2,6 +2,8 @@ import type express from "express";
 import { logsController } from "./resources/logs/logs.controller.ts";
 import { portfoliosController } from "./resources/portfolios/portfolios.controller.ts";
 import { usersController } from "./resources/users/users.controller.ts";
+import { NotFoundError } from "./shared/errors/base.error.ts";
+import { sendError } from "./shared/request/response.utils.ts";
 
 export function bindRoutes(app: express.Application) {
   app.get("/", (req, res) => {
@@ -10,4 +12,7 @@ export function bindRoutes(app: express.Application) {
   app.use("/logs", logsController);
   app.use("/users", usersController);
   app.use("/portfolios", portfoliosController);
+  app.all(/(.*)/, (req, res) => {
+    sendError(res, new NotFoundError("Route not found"));
+  });
 }
