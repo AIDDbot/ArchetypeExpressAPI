@@ -13,7 +13,6 @@ export const authMiddleware = (
   const userId = getUserIdFrom(req);
   if (!userId) {
     //sendError(res, new AuthenticationError("Unauthorized"));
-    //return;
     next();
     return;
   }

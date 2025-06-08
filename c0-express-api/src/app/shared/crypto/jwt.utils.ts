@@ -54,7 +54,9 @@ function verifyJwt(token: string, secret: string): object | undefined {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) {
-      throw new Error("Invalid token format: Token must have 3 parts.");
+      throw new Error(
+        `Invalid token format: Token must have 3 parts: ${token}`
+      );
     }
 
     const [encodedHeader, encodedPayload, encodedSignature] = parts;
