@@ -1,0 +1,26 @@
+### Get all stocks
+GET http://localhost:3000/stocks
+
+### Search stocks by name
+GET http://localhost:3000/stocks/search?name=Apple
+
+### Search stocks by industry
+GET http://localhost:3000/stocks/search?industry=Technology
+
+### Search stocks by symbol
+GET http://localhost:3000/stocks/search?symbol=AAPL
+
+### Search stocks with multiple criteria
+GET http://localhost:3000/stocks/search?name=Microsoft&industry=Technology&symbol=MSFT
+
+### Get stock by symbol
+GET http://localhost:3000/stocks/AAPL
+
+### Get stock price
+GET http://localhost:3000/stocks/AAPL/price
+
+### Get non-existent stock
+GET http://localhost:3000/stocks/INVALID
+
+### Get price for non-existent stock
+GET http://localhost:3000/stocks/INVALID/price
