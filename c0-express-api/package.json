@@ -11,6 +11,7 @@
   "main": "src/main.ts",
   "scripts": {
     "start": "node src/main.ts",
+    "start:tsx": "tsx src/main.ts",
     "dev": "node --watch  src/main.ts",
     "test": "node --test **/*.test.ts",
     "test:watch": "node --test --watch **/*.test.ts"
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/express": "^5.0.1",
-    "@types/node": "^22.15.27"
+    "@types/node": "^22.15.27",
+    "tsx": "^4.19.4"
   }
 }
