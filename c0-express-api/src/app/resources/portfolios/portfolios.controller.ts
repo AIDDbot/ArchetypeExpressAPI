@@ -4,6 +4,7 @@ import { Router } from "express";
 // --- Application ---
 import {
   createPortfolio,
+  deleteAllPortfolios,
   executeTransaction,
   getAllPortfolios,
   getPortfolioById,
@@ -30,6 +31,7 @@ portfoliosController.get("/", getAllPortfoliosHandler);
 portfoliosController.get("/:id", getPortfolioByIdHandler);
 portfoliosController.post("/:id/transactions", createTransactionHandler);
 portfoliosController.get("/:id/transactions", getTransactionsHandler);
+portfoliosController.delete("/", deleteAllPortfoliosHandler);
 // catch all route
 portfoliosController.all(/(.*)/, (req, res) => {
   sendError(res, new NotFoundError("Portfolio Route not found: " + req.url));
@@ -121,6 +123,18 @@ async function getTransactionsHandler(
   try {
     const transactions = await getTransactionsForPortfolio(id);
     sendSuccess(res, 200, transactions);
+  } catch (error) {
+    sendError(res, error);
+  }
+}
+
+async function deleteAllPortfoliosHandler(
+  _req: Request,
+  res: Response<string | ErrorResDTO>
+) {
+  try {
+    await deleteAllPortfolios();
+    sendSuccess(res, 200, "All portfolios deleted");
   } catch (error) {
     sendError(res, error);
   }

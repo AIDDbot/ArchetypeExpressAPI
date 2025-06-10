@@ -60,3 +60,11 @@ export async function getTransactionsForPortfolio(
   };
   return portfoliosService.getTransactionsForPortfolio(portfolioId, deps);
 }
+
+export async function deleteAllPortfolios(): Promise<void> {
+  const deps = {
+    portfolioRepository: portfoliosInMemoryRepository,
+    idUtils: idUtils,
+  };
+  return portfoliosService.deleteAllPortfolios(deps);
+}

@@ -14,4 +14,5 @@ export interface PortfolioRepository {
     transactionData: CreateTransactionDto
   ): Promise<Transaction>;
   findTransactionsByPortfolioId(portfolioId: string): Promise<Transaction[]>;
+  deleteAll(): Promise<void>;
 }

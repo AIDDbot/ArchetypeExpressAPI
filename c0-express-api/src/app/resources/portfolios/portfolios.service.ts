@@ -222,4 +222,8 @@ export const portfoliosService = {
     }
     return deps.portfolioRepository.findTransactionsByPortfolioId(portfolioId);
   },
+
+  deleteAllPortfolios: async (deps: Dependencies): Promise<void> => {
+    await deps.portfolioRepository.deleteAll();
+  },
 };

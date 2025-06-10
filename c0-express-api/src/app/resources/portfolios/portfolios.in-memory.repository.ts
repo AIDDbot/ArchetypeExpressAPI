@@ -64,4 +64,9 @@ export const portfoliosInMemoryRepository: PortfolioRepository = {
   ): Promise<Transaction[]> => {
     return transactions.filter((t) => t.portfolio_id === portfolioId);
   },
+
+  deleteAll: async (): Promise<void> => {
+    portfolios.length = 0;
+    transactions.length = 0;
+  },
 };
