@@ -1,0 +1,26 @@
+### Get all cryptos
+GET http://localhost:3000/cryptos
+
+### Search cryptos by name
+GET http://localhost:3000/cryptos/search?name=Bitcoin
+
+### Search cryptos by kind
+GET http://localhost:3000/cryptos/search?kind=stable
+
+### Search cryptos by symbol
+GET http://localhost:3000/cryptos/search?symbol=BTC
+
+### Search cryptos with multiple criteria
+GET http://localhost:3000/cryptos/search?name=Ethereum&kind=coin&symbol=ETH
+
+### Get crypto by symbol
+GET http://localhost:3000/cryptos/BTC
+
+### Get crypto rate
+GET http://localhost:3000/cryptos/BTC/rate
+
+### Get non-existent crypto
+GET http://localhost:3000/cryptos/INVALID
+
+### Get rate for non-existent crypto
+GET http://localhost:3000/cryptos/INVALID/rate 

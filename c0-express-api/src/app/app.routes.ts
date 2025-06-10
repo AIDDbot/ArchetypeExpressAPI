@@ -1,4 +1,5 @@
 import type express from "express";
+import { cryptosController } from "./resources/cryptos/cryptos.controller.ts";
 import { logsController } from "./resources/logs/logs.controller.ts";
 import { portfoliosController } from "./resources/portfolios/portfolios.controller.ts";
 import { stocksController } from "./resources/stocks/stocks.controller.ts";
@@ -14,6 +15,7 @@ export function bindRoutes(app: express.Application) {
   app.use("/users", usersController);
   app.use("/portfolios", portfoliosController);
   app.use("/stocks", stocksController);
+  app.use("/cryptos", cryptosController);
   app.all(/(.*)/, (req, res) => {
     sendError(res, new NotFoundError("Route not found"));
   });
