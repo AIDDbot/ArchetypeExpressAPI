@@ -105,7 +105,7 @@ export const stocksInMemoryRepository: StockRepository = {
     }
 
     // Generate a random price between 11 and 999
-    const price = Math.floor(Math.random() * (999 - 11 + 1)) + 11;
+    const price = Math.floor(Math.random() * 989) + 11;
 
     return {
       symbol: stock.symbol,
