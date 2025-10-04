@@ -16,6 +16,8 @@ export const logsService = {
       id: await deps.idUtils.generate(),
     };
     await deps.logRepository.save(logEntry);
+    // write also to the console
+    console.log(`[${logEntry.level}] ${logEntry.message}`); 
     return logEntry;
   },
 };

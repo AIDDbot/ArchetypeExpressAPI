@@ -20,5 +20,6 @@ export function sendSuccess(
   data: any = {}
 ) {
   logInfo(`${res.req.method} ${res.req.originalUrl} ${status}`, "ok");
+  console.log(data);
   res.status(status).json(data);
 }
