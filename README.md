@@ -1,10 +1,10 @@
 # Archetype Express API  
 
-Based on the [AIDDbot](https://github.com/AIcodeAcademy/AIDDbot) project.
+Based on the [AIDDbot](https://github.com/AIDDbot/AIDDbot) project.
 
 Archetype for AI tools to create API applications using Node.js. and Express.
 
-Repository: [AI code Academy / archetype express api](https://github.com/AIcodeAcademy/ArchetypeExpressAPI)
+Repository: [AI code Academy / archetype express api](https://github.com/AIDDbot/ArchetypeExpressAPI)
 
 AI instructions, prompts and rules: [.ai/](.ai/)
 
